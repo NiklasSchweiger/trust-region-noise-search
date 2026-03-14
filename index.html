@@ -103,18 +103,15 @@
         <h2 class="title is-3">TL;DR</h2>
         <div class="content has-text-justified tldr-intro">
           <p>
-            Pretrained diffusion and flow models are powerful, but often fall short of specific requirements — generating molecules with precise properties, or images that faithfully follow complex prompts. Existing inference-time alignment approaches either backpropagate through the entire generative process (expensive, prone to manifold drift) or rely on sequential filtering (needs many reward calls or accurate value estimates).
-          </p>
-          <p>
-            TRS takes a different route: it treats both the generative model and the reward as <em>black boxes</em> and only searches over the source noise. Inspired by Bayesian optimization, it maintains multiple &ldquo;trust regions&rdquo; in noise space that adaptively expand when they find good candidates and shift away from underperforming areas — balancing exploration and exploitation under strict evaluation budgets.
+            Diffusion and flow models generate outputs from random noise. What if we could search for <em>better</em> noise? TRS does exactly that: it treats the generative model and any reward function as black boxes, and uses a trust-region search to find noise inputs that produce higher-reward outputs — without retraining or backpropagating through anything.
           </p>
           <p class="tldr-highlights-title"><strong>Key highlights</strong></p>
           <ul class="tldr-highlights">
-            <li>Model- and reward-agnostic: works with any generative architecture and any reward, including expensive, noisy, or non-differentiable ones</li>
+            <li>Works with any reward: differentiable, non-differentiable, expensive, or human-proxy</li>
             <li>Stays on the data manifold — no gradient drift, stable even with many optimization steps</li>
-            <li>Evaluated on text-to-image (SD1.5, SDXL), molecule design, and protein design</li>
-            <li>Outperforms existing noise-optimization and even full trajectory-optimization baselines under identical compute budgets</li>
-            <li>Simple algorithm with minimal hyperparameter tuning across all tasks</li>
+            <li>Tested on text-to-image (SD1.5, SDXL), molecule design, and protein design</li>
+            <li>Outperforms noise-optimization and even full trajectory-optimization baselines under identical compute</li>
+            <li>Simple algorithm, minimal hyperparameter tuning across all tasks</li>
           </ul>
         </div>
         <div class="abstract-accordion">
@@ -140,16 +137,13 @@
     <h2 class="title is-3">How It Works</h2>
     <div class="content has-text-justified how-it-works-intro">
       <p>
-        A generative model maps a noise vector to an output — an image, a molecule, a protein. The mapping is deterministic: change the noise and you change the output. Some noise inputs lead to outputs that score much higher on a given reward. TRS finds them.
+        A generative model maps a noise vector to an output — an image, a molecule, a protein. Change the noise and you change the output. Some noise inputs lead to outputs that score much higher on a given reward. TRS finds them.
       </p>
       <p>
-        <strong>Warm-up.</strong> TRS starts by sampling a batch of random noise vectors from the model's prior, evaluating all of them, and selecting the top-<em>k</em> as initial &ldquo;trust-region centers&rdquo; — the most promising starting points in noise space.
+        TRS starts by sampling random noise vectors, evaluating them, and selecting the top-<em>k</em> as starting points. It then maintains a &ldquo;trust region&rdquo; around each — a local neighborhood where it proposes new candidates by perturbing a random subset of noise dimensions. Regions that find improvements <em>expand</em>; those that stall <em>contract</em>. After each iteration, all regions re-center on the globally best noise vectors, naturally shifting from broad exploration toward focused exploitation.
       </p>
       <p>
-        <strong>Search.</strong> Around each center, TRS maintains a hypercubic trust region and proposes new candidates by applying masked perturbations: each candidate modifies a random subset of the noise dimensions within the region. All candidates across regions are evaluated in parallel, then the regions adapt: a region that finds improvements <em>expands</em>; one that stalls <em>contracts</em>. Crucially, after each iteration all regions are re-centered on the globally best-<em>k</em> noise vectors seen so far — this naturally shifts the algorithm from broad exploration early on toward focused exploitation of the most promising areas.
-      </p>
-      <p>
-        <strong>Why it works.</strong> Because TRS only modifies the source noise and never intervenes with the model internals, generated samples remain on the learned data manifold — avoiding the drift problems of gradient-based methods. The trust-region mechanism, inspired by Bayesian optimization, provides structured control over the search scale without needing surrogate models, which we find do not help in the highly non-linear noise spaces of generative models.
+        Because TRS only modifies the source noise and never touches the model internals, generated samples stay on the learned data manifold — avoiding the drift problems of gradient-based methods.
       </p>
     </div>
     <figure class="result-figure result-full method-figure">
