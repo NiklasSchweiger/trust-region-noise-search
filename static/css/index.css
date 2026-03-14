@@ -112,28 +112,28 @@ body {
   font-family: 'Inter', sans-serif;
 }
 
-.teaser-img {
+.teaser-split {
+  align-items: flex-start;
+}
+
+.teaser-split .result-figure {
+  margin-bottom: 0;
+}
+
+.teaser-split .result-figure img {
   width: 100%;
-  display: block;
+  height: auto;
 }
 
-.teaser-caption {
+.teaser-split .result-figure figcaption {
+  font-size: 0.95rem;
   text-align: center;
-  margin-top: 1rem;
-  font-size: 1.1rem;
-  color: var(--text-secondary);
-  font-weight: 500;
-  line-height: 1.5;
 }
 
-.teaser-secondary {
-  margin-top: 2.5rem;
-}
-
-.teaser-secondary figcaption {
-  max-width: 42em;
-  margin-left: auto;
-  margin-right: auto;
+@media screen and (max-width: 768px) {
+  .teaser-split .column {
+    margin-bottom: 1.5rem;
+  }
 }
 
 

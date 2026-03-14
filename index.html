@@ -84,14 +84,20 @@
 <section class="hero teaser">
   <div class="container is-max-desktop">
     <div class="hero-body">
-      <img src="static/images/Teaser_Figure.png" alt="TRS Alignment Teaser" class="teaser-img">
-      <p class="teaser-caption">
-        TRS finds better outputs from generative models by searching over the noise — no retraining, no gradients through the model.
-      </p>
-      <figure class="result-figure result-full teaser-secondary">
-        <img src="static/images/second_teaser.png" alt="Inference-time alignment overview">
-        <figcaption>We optimize the noise input to a frozen model so that generated samples score higher on any reward you care about.</figcaption>
-      </figure>
+      <div class="columns is-variable is-4 teaser-split">
+        <div class="column is-half">
+          <figure class="result-figure">
+            <img src="static/images/Teaser_Figure.png" alt="TRS Alignment Teaser">
+            <figcaption>TRS finds better outputs from generative models by searching over the noise — no retraining, no gradients through the model.</figcaption>
+          </figure>
+        </div>
+        <div class="column is-half">
+          <figure class="result-figure">
+            <img src="static/images/second_teaser.png" alt="Inference-time alignment overview">
+            <figcaption>We optimize the noise input to a frozen model so that generated samples score higher on any reward you care about.</figcaption>
+          </figure>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -207,7 +213,7 @@
 
 <footer class="footer">
   <div class="content has-text-centered">
-    <p>Page built by Niklas Schweiger. Based on the Academic Project Page Template.</p>
+    <p>Page by Niklas Schweiger.</p>
   </div>
 </footer>
 
