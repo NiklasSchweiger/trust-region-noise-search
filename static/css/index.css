@@ -470,6 +470,77 @@ body {
   margin-bottom: 1.5rem;
 }
 
+/* TL;DR section */
+.tldr-intro {
+  margin-bottom: 1.5rem;
+}
+
+.tldr-highlights-title {
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.tldr-highlights {
+  margin-bottom: 1.5rem;
+  padding-left: 1.5rem;
+}
+
+.tldr-highlights li {
+  margin-bottom: 0.35rem;
+}
+
+/* Abstract accordion */
+.abstract-accordion {
+  margin-top: 1rem;
+}
+
+.abstract-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: var(--transition);
+}
+
+.abstract-toggle:hover {
+  color: var(--primary-hover);
+}
+
+.abstract-toggle-icon {
+  transition: transform 0.2s ease;
+}
+
+.abstract-toggle[aria-expanded="true"] .abstract-toggle-icon {
+  transform: rotate(180deg);
+}
+
+.abstract-collapse {
+  overflow: hidden;
+  margin-top: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.abstract-collapse .content {
+  font-size: 0.95rem;
+}
+
+/* How it works intro */
+.how-it-works-intro {
+  margin-bottom: 1.5rem;
+}
+
+.how-it-works-intro p {
+  margin-bottom: 1rem;
+}
+
 /* Footer Improvements */
 .footer {
   background: var(--background-secondary);

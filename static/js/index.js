@@ -119,8 +119,22 @@ function setupVideoCarouselAutoplay() {
     });
 }
 
+// Abstract accordion toggle
+function setupAbstractAccordion() {
+    var toggle = document.getElementById('abstractToggle');
+    var panel = document.getElementById('fullAbstract');
+    var labelSpan = toggle ? toggle.querySelector('.abstract-toggle-text') : null;
+    if (!toggle || !panel || !labelSpan) return;
+    toggle.addEventListener('click', function() {
+        panel.hidden = !panel.hidden;
+        var isExpanded = !panel.hidden;
+        toggle.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+        labelSpan.textContent = isExpanded ? 'Hide full abstract' : 'Read full abstract';
+    });
+}
+
 $(document).ready(function() {
-    // Check for click events on the navbar burger icon
+    setupAbstractAccordion();
 
     var options = {
 		slidesToScroll: 1,

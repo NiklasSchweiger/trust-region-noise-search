@@ -86,11 +86,11 @@
     <div class="hero-body">
       <img src="static/images/Teaser_Figure.png" alt="TRS Alignment Teaser" class="teaser-img">
       <p class="teaser-caption">
-        TRS treats generative and reward models as black-boxes, optimizing source noise to align outputs with expensive or non-differentiable rewards.
+        TRS finds better outputs from generative models by searching over the noise — no retraining, no gradients through the model.
       </p>
       <figure class="result-figure result-full teaser-secondary">
         <img src="static/images/second_teaser.png" alt="Inference-time alignment overview">
-        <figcaption>TRS optimizes the source noise of a frozen generative model to maximize a black-box reward at inference time.</figcaption>
+        <figcaption>We optimize the noise input to a frozen model so that generated samples score higher on any reward you care about.</figcaption>
       </figure>
     </div>
   </div>
@@ -98,12 +98,33 @@
 
 <section class="section hero is-light">
   <div class="container is-max-desktop">
-    <div class="columns is-centered has-text-centered">
+    <div class="columns is-centered">
       <div class="column is-four-fifths">
-        <h2 class="title is-3">Abstract</h2>
-        <div class="content has-text-justified">
+        <h2 class="title is-3">TL;DR</h2>
+        <div class="content has-text-justified tldr-intro">
           <p>
-            Optimizing the noise samples of diffusion and flow models is an increasingly popular approach to align these models to target rewards at inference time. However, we observe that these approaches are usually restricted to differentiable or cheap reward functions, the formulation of the underlying pre-trained generative model, or are memory/compute inefficient. We instead propose a simple trust-region based search algorithm (TRS) which treats the pre-trained generative and reward models as a black-box and only optimizes the source noise. Our approach achieves a good balance between global exploration and local exploitation, and is versatile and easily adaptable to various generative settings with minimal hyperparameter tuning. We evaluate TRS across text-to-image, molecule and protein design tasks, and obtain significantly improved output samples over the base generative models and other inference-time alignment approaches which optimize the source noise sample, or even the entire reverse-time sampling noise trajectories in the case of diffusion models.          </p>
+            Diffusion and flow models generate outputs from random noise. What if we could search for <em>better</em> noise? TRS does exactly that: it treats the generative model and any reward function as black boxes, and uses a trust-region search to find noise inputs that produce higher-reward outputs — without retraining or backpropagating through anything.
+          </p>
+          <p class="tldr-highlights-title"><strong>Key results</strong></p>
+          <ul class="tldr-highlights">
+            <li>Works with any reward: differentiable, non-differentiable, expensive, or human-proxy</li>
+            <li>Tested on text-to-image (SD1.5, SDXL), molecule design, and protein design</li>
+            <li>Outperforms existing noise-optimization baselines across all domains</li>
+            <li>Simple algorithm, minimal hyperparameter tuning</li>
+          </ul>
+        </div>
+        <div class="abstract-accordion">
+          <button type="button" class="abstract-toggle" id="abstractToggle" aria-expanded="false" aria-controls="fullAbstract">
+            <span class="abstract-toggle-text">Read full abstract</span>
+            <span class="icon abstract-toggle-icon"><i class="fas fa-chevron-down"></i></span>
+          </button>
+          <div id="fullAbstract" class="abstract-collapse" hidden>
+            <div class="content has-text-justified">
+              <p>
+                Optimizing the noise samples of diffusion and flow models is an increasingly popular approach to align these models to target rewards at inference time. However, we observe that these approaches are usually restricted to differentiable or cheap reward functions, the formulation of the underlying pre-trained generative model, or are memory/compute inefficient. We instead propose a simple trust-region based search algorithm (TRS) which treats the pre-trained generative and reward models as a black-box and only optimizes the source noise. Our approach achieves a good balance between global exploration and local exploitation, and is versatile and easily adaptable to various generative settings with minimal hyperparameter tuning. We evaluate TRS across text-to-image, molecule and protein design tasks, and obtain significantly improved output samples over the base generative models and other inference-time alignment approaches which optimize the source noise sample, or even the entire reverse-time sampling noise trajectories in the case of diffusion models.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -112,10 +133,18 @@
 
 <section class="section">
   <div class="container is-max-desktop">
-    <h2 class="title is-3">Method</h2>
+    <h2 class="title is-3">How It Works</h2>
+    <div class="content has-text-justified how-it-works-intro">
+      <p>
+        Generative models map a random noise vector to an output (image, molecule, protein). Different noise inputs lead to different outputs — and some are better than others according to your reward. TRS searches over the noise space to find inputs that yield higher-reward outputs, while treating both the generative model and the reward as black boxes (no gradients required).
+      </p>
+      <p>
+        We maintain several &ldquo;trust regions&rdquo; in noise space — local neighborhoods where we sample and evaluate candidates. When a region finds strong candidates, we expand it; when it underperforms, we recenter it toward more promising areas. This balances exploration (trying new regions) with exploitation (refining good ones), and works with any reward — including noisy, delayed, or non-differentiable ones.
+      </p>
+    </div>
     <figure class="result-figure result-full method-figure">
       <img src="static/images/method.png" alt="Trust-region search algorithm">
-      <figcaption>Illustration of the trust-region search algorithm. (a) Noise samples are mapped to data space via the generative model; samples from the same trust region exhibit visual similarity. (b) New candidates are generated by adding masked perturbations to each region center. (c) Comparison of Sobol and Gaussian perturbation schemes. (d) Regions expand upon finding top-k samples and shift away from underperforming areas.</figcaption>
+      <figcaption>Trust-region search in noise space: regions expand when they find top candidates and shift when they underperform.</figcaption>
     </figure>
   </div>
 </section>
@@ -127,13 +156,13 @@
     <h3 class="title is-5 result-subtitle">Text-to-Image</h3>
     <figure class="result-figure result-full">
       <img src="static/images/img_vis.png" alt="Text-to-image visual examples">
-      <figcaption>Optimized samples from SDXL-Lightning using ImageReward (top) and HPSv2 (bottom two rows) on DrawBench prompts. TRS outputs adhere more closely to the specified animal count, text, and relative positions.</figcaption>
+      <figcaption>TRS generates images that better match the prompt — correct animal counts, text, and spatial layout.</figcaption>
     </figure>
 
     <h3 class="title is-5 result-subtitle">Molecule &amp; Protein Design</h3>
     <figure class="result-figure result-full">
       <img src="static/images/mol_prot_vis.png" alt="Molecule and protein visual examples">
-      <figcaption>Optimized molecule and protein samples. (a) Molecules optimized for 3 and 6 target properties. (b) Proteins optimized for designability with 50 and 100 residues.</figcaption>
+      <figcaption>TRS optimizes molecules toward target chemical properties and proteins toward higher designability.</figcaption>
     </figure>
 
     <h3 class="title is-5 result-subtitle">Quantitative Results</h3>
@@ -142,18 +171,18 @@
         <p class="split-column-label">Text-to-Image</p>
         <figure class="result-figure">
           <img src="static/images/image_results.png" alt="Quantitative text-to-image results">
-          <figcaption>DrawBench: mean best rewards (ImageReward, HPSv2) for SD1.5 and SDXL, and reward calls. TRS shows the best scaling across NFE budgets.</figcaption>
+          <figcaption>TRS consistently outperforms baselines and scales well with more compute (NFE budget).</figcaption>
         </figure>
       </div>
       <div class="column is-half">
         <p class="split-column-label">Molecules &amp; Protein</p>
         <figure class="result-figure">
           <img src="static/images/mol_results.png" alt="Molecule design results">
-          <figcaption>Molecules: distance to 3/6 property targets, MSP and VUP; scaling over NFE.</figcaption>
+          <figcaption>TRS reaches better target alignment and scaling than baselines on molecule optimization.</figcaption>
         </figure>
         <figure class="result-figure">
           <img src="static/images/protein_results.png" alt="Protein design results">
-          <figcaption>Proteins: designability at 64k NFE, diversity and novelty; reward improvement over NFE.</figcaption>
+          <figcaption>TRS improves designability and reward over the NFE budget for protein design.</figcaption>
         </figure>
       </div>
     </div>
@@ -166,7 +195,7 @@
     <pre><code>@article{schweiger2026trs,
   title={Trust-Region Noise Search for Black-Box Alignment of Diffusion and Flow Models},
   author={Schweiger, Niklas and Ram, Karnik and Cremers, Daniel},
-  journal={Workshop on [Your Workshop Name], ICLR},
+  journal={ReALM-GEN Workshop, ICLR},
   year={2026}
 }</code></pre>
   </div>
