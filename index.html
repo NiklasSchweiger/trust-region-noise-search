@@ -125,20 +125,14 @@
     <h2 class="title is-3">Results</h2>
 
     <h3 class="title is-5 result-subtitle">Text-to-Image</h3>
-    <div class="columns is-variable is-6 split-results">
-      <div class="column is-half">
-        <figure class="result-figure">
-          <img src="static/images/img_vis.png" alt="Text-to-image visual examples">
-          <figcaption>Optimized samples from SDXL-Lightning using ImageReward (top) and HPSv2 (bottom two rows) on DrawBench prompts. TRS outputs adhere more closely to the specified animal count, text, and relative positions.</figcaption>
-        </figure>
-      </div>
-      <div class="column is-half">
-        <figure class="result-figure">
-          <img src="static/images/image_results.png" alt="Quantitative text-to-image results">
-          <figcaption>Quantitative comparison on DrawBench. Mean best rewards (ImageReward, HPSv2) for SD1.5 and SDXL, alongside the number of reward calls. TRS shows the best scaling performance across NFE budgets.</figcaption>
-        </figure>
-      </div>
-    </div>
+    <figure class="result-figure result-full">
+      <img src="static/images/img_vis.png" alt="Text-to-image visual examples">
+      <figcaption>Optimized samples from SDXL-Lightning using ImageReward (top) and HPSv2 (bottom two rows) on DrawBench prompts. TRS outputs adhere more closely to the specified animal count, text, and relative positions.</figcaption>
+    </figure>
+    <figure class="result-figure result-full result-figure-centered">
+      <img src="static/images/image_results.png" alt="Quantitative text-to-image results">
+      <figcaption>Quantitative comparison on DrawBench. Mean best rewards (ImageReward, HPSv2) for SD1.5 and SDXL, alongside the number of reward calls. TRS shows the best scaling performance across NFE budgets.</figcaption>
+    </figure>
 
     <h3 class="title is-5 result-subtitle">Molecule &amp; Protein Design</h3>
     <figure class="result-figure result-full">
@@ -146,17 +140,20 @@
       <figcaption>Optimized molecule and protein samples. (a) Molecules optimized for 3 and 6 target properties. (b) Proteins optimized for designability with 50 and 100 residues.</figcaption>
     </figure>
 
-    <h3 class="title is-5 result-subtitle">Molecule Design</h3>
-    <figure class="result-figure result-full">
-      <img src="static/images/mol_results.png" alt="Molecule design results">
-      <figcaption>Molecule optimization results. (a) Distance to combined targets of 3 and 6 chemical properties, with stability (MSP) and validity (VUP) metrics. (b) Scaling trends over the NFE budget.</figcaption>
-    </figure>
-
-    <h3 class="title is-5 result-subtitle">Protein Design</h3>
-    <figure class="result-figure result-full">
-      <img src="static/images/protein_results.png" alt="Protein design results">
-      <figcaption>Protein optimization results. (a) Mean designability rewards at 64k NFE, with diversity and novelty metrics. (b) Reward improvement across NFE budgets.</figcaption>
-    </figure>
+    <div class="columns is-variable is-6 split-results">
+      <div class="column is-half">
+        <figure class="result-figure">
+          <img src="static/images/mol_results.png" alt="Molecule design results">
+          <figcaption>Molecule optimization results. (a) Distance to combined targets of 3 and 6 chemical properties, with stability (MSP) and validity (VUP) metrics. (b) Scaling trends over the NFE budget.</figcaption>
+        </figure>
+      </div>
+      <div class="column is-half">
+        <figure class="result-figure">
+          <img src="static/images/protein_results.png" alt="Protein design results">
+          <figcaption>Protein optimization results. (a) Mean designability rewards at 64k NFE, with diversity and novelty metrics. (b) Reward improvement across NFE budgets.</figcaption>
+        </figure>
+      </div>
+    </div>
   </div>
 </section>
 
