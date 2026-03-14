@@ -353,6 +353,13 @@ body {
   max-width: 100%;
 }
 
+.method-figure img {
+  max-width: 100%;
+  width: auto;
+  margin: 0 auto;
+  display: block;
+}
+
 /* Pagination and Misc Improvements */
 .slider-pagination .slider-page {
   background: var(--primary-color);
