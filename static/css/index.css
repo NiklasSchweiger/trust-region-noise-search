@@ -378,7 +378,7 @@ body {
   }
 }
 
-/* Split-screen for mol vs protein results (matching aspect ratios) */
+/* Split-screen for quantitative results (text-to-image | mol + protein) */
 .split-results {
   align-items: flex-start;
 }
@@ -397,9 +397,25 @@ body {
   height: auto;
 }
 
+.quantitative-split .split-column-label {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+  margin-top: 0;
+}
+
+.quantitative-split .column.is-half:last-child .result-figure:first-of-type {
+  margin-bottom: 1.5rem;
+}
+
 @media screen and (max-width: 768px) {
   .split-results .column {
     margin-bottom: 1.5rem;
+  }
+
+  .quantitative-split .column.is-half:last-child .result-figure:first-of-type {
+    margin-bottom: 1rem;
   }
 }
 
