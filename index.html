@@ -125,14 +125,20 @@
     <h2 class="title is-3">Results</h2>
 
     <h3 class="title is-5 result-subtitle">Text-to-Image</h3>
-    <figure class="result-figure result-full">
-      <img src="static/images/img_vis.png" alt="Text-to-image visual examples">
-      <figcaption>Optimized samples from SDXL-Lightning using ImageReward (top) and HPSv2 (bottom two rows) on DrawBench prompts. TRS outputs adhere more closely to the specified animal count, text, and relative positions.</figcaption>
-    </figure>
-    <figure class="result-figure result-full">
-      <img src="static/images/image_results.png" alt="Quantitative text-to-image results">
-      <figcaption>Quantitative comparison on DrawBench. Mean best rewards (ImageReward, HPSv2) for SD1.5 and SDXL, alongside the number of reward calls. TRS shows the best scaling performance across NFE budgets.</figcaption>
-    </figure>
+    <div class="columns is-variable is-6 split-results">
+      <div class="column is-half">
+        <figure class="result-figure">
+          <img src="static/images/img_vis.png" alt="Text-to-image visual examples">
+          <figcaption>Optimized samples from SDXL-Lightning using ImageReward (top) and HPSv2 (bottom two rows) on DrawBench prompts. TRS outputs adhere more closely to the specified animal count, text, and relative positions.</figcaption>
+        </figure>
+      </div>
+      <div class="column is-half">
+        <figure class="result-figure">
+          <img src="static/images/image_results.png" alt="Quantitative text-to-image results">
+          <figcaption>Quantitative comparison on DrawBench. Mean best rewards (ImageReward, HPSv2) for SD1.5 and SDXL, alongside the number of reward calls. TRS shows the best scaling performance across NFE budgets.</figcaption>
+        </figure>
+      </div>
+    </div>
 
     <h3 class="title is-5 result-subtitle">Molecule &amp; Protein Design</h3>
     <figure class="result-figure result-full">

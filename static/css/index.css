@@ -360,6 +360,31 @@ body {
   display: block;
 }
 
+/* Split-screen layout for quantitative results */
+.split-results {
+  align-items: flex-start;
+}
+
+.split-results .column {
+  display: flex;
+  flex-direction: column;
+}
+
+.split-results .result-figure {
+  margin-bottom: 0;
+}
+
+.split-results .result-figure img {
+  width: 100%;
+  height: auto;
+}
+
+@media screen and (max-width: 768px) {
+  .split-results .column {
+    margin-bottom: 1.5rem;
+  }
+}
+
 /* Pagination and Misc Improvements */
 .slider-pagination .slider-page {
   background: var(--primary-color);
