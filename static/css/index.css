@@ -53,7 +53,7 @@ body {
   background: var(--text-primary) !important;
   border: none !important;
   color: white !important;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
 }
 
 .button.is-dark:hover {
@@ -64,7 +64,7 @@ body {
 
 .button.is-dark:active {
   transform: translateY(0);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
 }
 
 .footer .icon-link {
@@ -268,7 +268,7 @@ body {
 
 .publication-body img {
   border-radius: var(--border-radius);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
   transition: var(--transition);
 }
 
@@ -289,7 +289,7 @@ body {
   font-size: 0;
   background: var(--background-primary);
   border-radius: var(--border-radius-lg);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
   transition: var(--transition);
   border: 1px solid var(--border-color);
 }
@@ -324,12 +324,12 @@ body {
   width: 100%;
   height: auto;
   border-radius: var(--border-radius-lg);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
   transition: var(--transition);
 }
 
 .result-figure img:hover {
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-md);
 }
 
 .result-figure figcaption {
@@ -346,7 +346,7 @@ body {
 }
 
 .result-subtitle:first-of-type {
-  margin-top: 0 !important;
+  margin-top: 1rem !important;
 }
 
 .result-full {
@@ -406,15 +406,6 @@ body {
   text-align: center;
 }
 
-.results-section-header::after {
-  content: "";
-  display: block;
-  width: 60px;
-  height: 3px;
-  margin: 0.75rem auto 0;
-  border-radius: 999px;
-  background: var(--gradient-accent);
-}
 
 /* Split-screen for quantitative results (text-to-image | mol + protein) */
 .split-results {
@@ -645,7 +636,7 @@ code {
 .copy-bibtex-btn:hover {
   background: var(--primary-hover);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
 }
 
 .copy-bibtex-btn.copied {
@@ -707,7 +698,7 @@ code {
   padding: 0.75rem 1.25rem;
   font-weight: 600;
   font-size: 0.9rem;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
   transition: var(--transition);
   cursor: pointer;
   text-decoration: none;
