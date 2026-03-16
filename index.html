@@ -152,7 +152,7 @@
         Because TRS only modifies the source noise and never touches the model internals, generated samples stay on the learned data manifold — avoiding the drift problems of gradient-based methods.
       </p>
     </div>
-    <figure class="result-figure result-full method-figure">
+    <figure class="result-figure result-figure-centered method-figure">
       <img src="static/images/method.png" alt="Trust-region search algorithm">
       <figcaption>Trust-region search in noise space: regions expand when they find top candidates and shift when they underperform.</figcaption>
     </figure>
@@ -164,13 +164,13 @@
     <h2 class="title is-3">Results</h2>
 
     <h3 class="title is-5 result-subtitle">Text-to-Image</h3>
-    <figure class="result-figure result-full">
+    <figure class="result-figure result-figure-centered">
       <img src="static/images/img_vis.png" alt="Text-to-image visual examples">
       <figcaption>TRS generates images that better match the prompt — correct animal counts, text, and spatial layout.</figcaption>
     </figure>
 
     <h3 class="title is-5 result-subtitle">Molecule &amp; Protein Design</h3>
-    <figure class="result-figure result-full">
+    <figure class="result-figure result-figure-centered">
       <img src="static/images/mol_prot_vis.png" alt="Molecule and protein visual examples">
       <figcaption>TRS optimizes molecules toward target chemical properties and proteins toward higher designability.</figcaption>
     </figure>
