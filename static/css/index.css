@@ -362,7 +362,7 @@ body {
 
 /* Centered figure (e.g. quantitative table) at ~75% width */
 .result-figure-centered {
-  max-width: 75%;
+  max-width: 88%;
   margin-left: auto;
   margin-right: auto;
 }
@@ -380,7 +380,7 @@ body {
 
 /* Match heading width to centered figures */
 .narrow-section {
-  max-width: 75%;
+  max-width: 88%;
   margin-left: auto;
   margin-right: auto;
 }
@@ -393,6 +393,23 @@ body {
   .narrow-section {
     max-width: 100%;
   }
+}
+
+
+/* Results section header styling */
+.results-section-header {
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.results-section-header::after {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 3px;
+  margin: 0.75rem auto 0;
+  border-radius: 999px;
+  background: var(--gradient-accent);
 }
 
 /* Split-screen for quantitative results (text-to-image | mol + protein) */
