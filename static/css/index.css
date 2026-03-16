@@ -378,6 +378,23 @@ body {
   }
 }
 
+/* Match heading width to centered figures */
+.narrow-section {
+  max-width: 75%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.narrow-section .result-subtitle {
+  text-align: left;
+}
+
+@media screen and (max-width: 768px) {
+  .narrow-section {
+    max-width: 100%;
+  }
+}
+
 /* Split-screen for quantitative results (text-to-image | mol + protein) */
 .split-results {
   align-items: flex-start;
