@@ -362,7 +362,7 @@ body {
 
 /* Centered figure (e.g. quantitative table) at ~75% width */
 .result-figure-centered {
-  max-width: 88%;
+  max-width: 94%;
   margin-left: auto;
   margin-right: auto;
 }
@@ -380,7 +380,7 @@ body {
 
 /* Match heading width to centered figures */
 .narrow-section {
-  max-width: 88%;
+  max-width: 94%;
   margin-left: auto;
   margin-right: auto;
 }
@@ -400,6 +400,10 @@ body {
 .results-section-header {
   margin-bottom: 2rem;
   position: relative;
+  max-width: 94%;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
 }
 
 .results-section-header::after {
