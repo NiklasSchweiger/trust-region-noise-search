@@ -378,6 +378,14 @@ body {
   }
 }
 
+/* Divider between qualitative and quantitative results */
+.results-divider {
+  max-width: 60%;
+  margin: 3rem auto 1.5rem;
+  border: none;
+  border-top: 1px solid var(--border-color);
+}
+
 /* Quantitative results: stacked layout */
 .quantitative-stack {
   max-width: 90%;
@@ -386,6 +394,12 @@ body {
 
 .quantitative-stack .result-figure {
   margin-bottom: 1.25rem;
+}
+
+.quantitative-hero {
+  max-width: 75%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .quantitative-row {
@@ -402,6 +416,12 @@ body {
   color: var(--text-secondary);
   margin-top: 1rem;
   font-weight: 500;
+}
+
+/* Compact BibTeX section */
+.bibtex-section {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
 }
 
 

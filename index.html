@@ -113,10 +113,10 @@
           </p>
           <p class="tldr-highlights-title"><strong>Key highlights</strong></p>
           <ul class="tldr-highlights">
+            <li>Outperforms noise-optimization and even full trajectory-optimization baselines under identical compute</li>
+            <li>Tested across text-to-image (SD1.5, SDXL), molecule design, and protein design</li>
             <li>Works with any reward: differentiable, non-differentiable, expensive, or human-proxy</li>
             <li>Stays on the data manifold — no gradient drift, stable even with many optimization steps</li>
-            <li>Tested on text-to-image (SD1.5, SDXL), molecule design, and protein design</li>
-            <li>Outperforms noise-optimization and even full trajectory-optimization baselines under identical compute</li>
             <li>Simple algorithm, minimal hyperparameter tuning across all tasks</li>
           </ul>
         </div>
@@ -158,6 +158,7 @@
     </div>
     <figure class="result-figure result-figure-centered method-figure">
       <img src="static/images/method.png" alt="Trust-region search algorithm">
+      <figcaption>Trust regions expand around improving noise vectors and contract when stalled, balancing exploration and exploitation.</figcaption>
     </figure>
   </div>
 </section>
@@ -169,18 +170,20 @@
     <h3 class="title is-5 result-subtitle">Text-to-Image</h3>
     <figure class="result-figure result-figure-centered">
       <img src="static/images/img_vis.png" alt="Text-to-image visual examples">
-      <figcaption>TRS images follow the prompt better than baselines (counts, text, layout).</figcaption>
+      <figcaption>Optimized SDXL-Lightning samples. TRS outputs match the prompt more faithfully — correct counts, readable text, accurate layout.</figcaption>
     </figure>
 
     <h3 class="title is-5 result-subtitle">Molecule &amp; Protein Design</h3>
     <figure class="result-figure result-figure-centered">
       <img src="static/images/mol_prot_vis.png" alt="Molecule and protein visual examples">
-      <figcaption>TRS finds molecules and proteins with clearly improved target properties.</figcaption>
+      <figcaption>Randomly selected optimized molecules and proteins. TRS samples land closer to target properties and achieve higher designability.</figcaption>
     </figure>
+
+    <hr class="results-divider">
 
     <h3 class="title is-5 result-subtitle">Quantitative Comparison</h3>
     <div class="quantitative-stack">
-      <figure class="result-figure result-figure-centered">
+      <figure class="result-figure quantitative-hero">
         <img src="static/images/image_results.png" alt="Quantitative text-to-image results">
       </figure>
       <div class="columns is-variable is-4 is-centered quantitative-row">
@@ -195,12 +198,12 @@
           </figure>
         </div>
       </div>
-      <p class="quantitative-caption">TRS outperforms all baselines under identical compute budgets across text-to-image, molecule, and protein tasks.</p>
+      <p class="quantitative-caption">Mean best rewards and scaling curves. TRS consistently scores highest under the same compute budget across all domains.</p>
     </div>
   </div>
 </section>
 
-<section class="section" id="BibTeX">
+<section class="section bibtex-section" id="BibTeX">
   <div class="container is-max-desktop content">
     <h2 class="title has-text-centered">BibTeX</h2>
     <pre><code>Coming soon – citation will be available once the arXiv preprint is public.</code></pre>
