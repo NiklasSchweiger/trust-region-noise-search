@@ -88,13 +88,13 @@
         <div class="column is-half">
           <figure class="result-figure">
             <img src="static/images/Teaser_Figure.png" alt="TRS Alignment Teaser">
-            <figcaption>TRS finds better outputs from generative models by searching over the noise — no retraining, no gradients through the model.</figcaption>
+            <figcaption>TRS balances global exploration of noise space with local refinement around good regions.</figcaption>
           </figure>
         </div>
         <div class="column is-half">
           <figure class="result-figure">
             <img src="static/images/second_teaser.png" alt="Inference-time alignment overview">
-            <figcaption>We optimize the noise input to a frozen model so that generated samples score higher on any reward you care about.</figcaption>
+            <figcaption>Searching over noise can dramatically upgrade even smaller base models.</figcaption>
           </figure>
         </div>
       </div>
@@ -154,7 +154,7 @@
     </div>
     <figure class="result-figure result-figure-centered method-figure">
       <img src="static/images/method.png" alt="Trust-region search algorithm">
-      <figcaption>Trust-region search in noise space: regions expand when they find top candidates and shift when they underperform.</figcaption>
+      <figcaption>Diagram of TRS: multiple trust regions adapt around promising noise vectors.</figcaption>
     </figure>
   </div>
 </section>
@@ -167,7 +167,7 @@
       <h3 class="title is-5 result-subtitle">Text-to-Image</h3>
       <figure class="result-figure result-figure-centered">
       <img src="static/images/img_vis.png" alt="Text-to-image visual examples">
-      <figcaption>TRS generates images that better match the prompt — correct animal counts, text, and spatial layout.</figcaption>
+      <figcaption>TRS images follow the prompt better than baselines (counts, text, layout).</figcaption>
     </figure>
     </div>
 
@@ -175,7 +175,7 @@
       <h3 class="title is-5 result-subtitle">Molecule &amp; Protein Design</h3>
     <figure class="result-figure result-figure-centered">
       <img src="static/images/mol_prot_vis.png" alt="Molecule and protein visual examples">
-      <figcaption>TRS optimizes molecules toward target chemical properties and proteins toward higher designability.</figcaption>
+      <figcaption>TRS finds molecules and proteins with clearly improved target properties.</figcaption>
     </figure>
     </div>
 
@@ -185,18 +185,17 @@
         <p class="split-column-label">Text-to-Image</p>
         <figure class="result-figure">
           <img src="static/images/image_results.png" alt="Quantitative text-to-image results">
-          <figcaption>TRS consistently outperforms baselines and scales well with more compute (NFE budget).</figcaption>
+          <figcaption>TRS achieves the best rewards for SD1.5 / SDXL at fixed compute.</figcaption>
         </figure>
       </div>
       <div class="column is-half">
         <p class="split-column-label">Molecules &amp; Protein</p>
         <figure class="result-figure">
-          <img src="static/images/mol_results.png" alt="Molecule design results">
-          <figcaption>TRS reaches better target alignment and scaling than baselines on molecule optimization.</figcaption>
+          <img src="static/images/mol_results.png" alt="Molecule optimization results">
         </figure>
         <figure class="result-figure">
-          <img src="static/images/protein_results.png" alt="Protein design results">
-          <figcaption>TRS improves designability and reward over the NFE budget for protein design.</figcaption>
+          <img src="static/images/protein_results.png" alt="Protein optimization results">
+          <figcaption>TRS improves molecule and protein objectives more efficiently than baselines.</figcaption>
         </figure>
       </div>
     </div>
