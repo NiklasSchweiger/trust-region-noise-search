@@ -386,7 +386,7 @@ body {
 }
 
 .narrow-section .result-subtitle {
-  text-align: left;
+  text-align: center;
 }
 
 @media screen and (max-width: 768px) {
