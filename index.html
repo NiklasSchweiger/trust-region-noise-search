@@ -106,7 +106,7 @@
   <div class="container is-max-desktop">
     <div class="columns is-centered">
       <div class="column is-four-fifths">
-        <h2 class="title is-3">In a Nutshell</h2>
+        <h2 class="title is-3 has-text-centered">In a Nutshell</h2>
         <div class="content has-text-justified tldr-intro">
           <p>
             Diffusion and flow models generate outputs from random noise. What if we could search for <em>better</em> noise? TRS does exactly that: it treats the generative model and any reward function as black boxes, and uses a trust-region search to find noise inputs that produce higher-reward outputs — without retraining or backpropagating through anything.
@@ -140,77 +140,76 @@
 
 <section class="section">
   <div class="container is-max-desktop">
-    <h2 class="title is-3">How It Works</h2>
-    <div class="content has-text-justified how-it-works-intro">
-      <p>
-        A generative model maps a noise vector to an output — an image, a molecule, a protein. Change the noise and you change the output. Some noise inputs lead to outputs that score much higher on a given reward. TRS finds them.
-      </p>
-      <p>
-        TRS starts by sampling random noise vectors, evaluating them, and selecting the top-<em>k</em> as starting points. It then maintains a &ldquo;trust region&rdquo; around each — a local neighborhood where it proposes new candidates by perturbing a random subset of noise dimensions. Regions that find improvements <em>expand</em>; those that stall <em>contract</em>. After each iteration, all regions re-center on the globally best noise vectors, naturally shifting from broad exploration toward focused exploitation.
-      </p>
-      <p>
-        Because TRS only modifies the source noise and never touches the model internals, generated samples stay on the learned data manifold — avoiding the drift problems of gradient-based methods.
-      </p>
+    <h2 class="title is-3 has-text-centered">How It Works</h2>
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <div class="content has-text-justified how-it-works-intro">
+          <p>
+            A generative model maps a noise vector to an output — an image, a molecule, a protein. Change the noise and you change the output. Some noise inputs lead to outputs that score much higher on a given reward. TRS finds them.
+          </p>
+          <p>
+            TRS starts by sampling random noise vectors, evaluating them, and selecting the top-<em>k</em> as starting points. It then maintains a &ldquo;trust region&rdquo; around each — a local neighborhood where it proposes new candidates by perturbing a random subset of noise dimensions. Regions that find improvements <em>expand</em>; those that stall <em>contract</em>. After each iteration, all regions re-center on the globally best noise vectors, naturally shifting from broad exploration toward focused exploitation.
+          </p>
+          <p>
+            Because TRS only modifies the source noise and never touches the model internals, generated samples stay on the learned data manifold — avoiding the drift problems of gradient-based methods.
+          </p>
+        </div>
+      </div>
     </div>
     <figure class="result-figure result-figure-centered method-figure">
       <img src="static/images/method.png" alt="Trust-region search algorithm">
-      <figcaption>Diagram of TRS: multiple trust regions adapt around promising noise vectors.</figcaption>
     </figure>
   </div>
 </section>
 
 <section class="section hero is-light">
-  <div class="container is-max-desktop">
-    <h2 class="title is-3 results-section-header">Results</h2>
+  <div class="container is-max-desktop has-text-centered">
+    <h2 class="title is-3">Results</h2>
 
-    <div class="narrow-section">
-      <h3 class="title is-5 result-subtitle">Text-to-Image</h3>
-      <figure class="result-figure result-figure-centered">
+    <h3 class="title is-5 result-subtitle">Text-to-Image</h3>
+    <figure class="result-figure result-figure-centered">
       <img src="static/images/img_vis.png" alt="Text-to-image visual examples">
       <figcaption>TRS images follow the prompt better than baselines (counts, text, layout).</figcaption>
     </figure>
-    </div>
 
-    <div class="narrow-section">
-      <h3 class="title is-5 result-subtitle">Molecule &amp; Protein Design</h3>
+    <h3 class="title is-5 result-subtitle">Molecule &amp; Protein Design</h3>
     <figure class="result-figure result-figure-centered">
       <img src="static/images/mol_prot_vis.png" alt="Molecule and protein visual examples">
       <figcaption>TRS finds molecules and proteins with clearly improved target properties.</figcaption>
     </figure>
-    </div>
 
-    <h3 class="title is-5 result-subtitle">Quantitative Results</h3>
-    <div class="columns is-variable is-6 split-results quantitative-split">
-      <div class="column is-half">
-        <p class="split-column-label">Text-to-Image</p>
-        <figure class="result-figure">
-          <img src="static/images/image_results.png" alt="Quantitative text-to-image results">
-        </figure>
+    <h3 class="title is-5 result-subtitle">Quantitative Comparison</h3>
+    <div class="quantitative-stack">
+      <figure class="result-figure result-figure-centered">
+        <img src="static/images/image_results.png" alt="Quantitative text-to-image results">
+      </figure>
+      <div class="columns is-variable is-4 is-centered quantitative-row">
+        <div class="column is-half">
+          <figure class="result-figure">
+            <img src="static/images/mol_results.png" alt="Molecule optimization results">
+          </figure>
+        </div>
+        <div class="column is-half">
+          <figure class="result-figure">
+            <img src="static/images/protein_results.png" alt="Protein optimization results">
+          </figure>
+        </div>
       </div>
-      <div class="column is-half">
-        <p class="split-column-label">Molecules &amp; Protein</p>
-        <figure class="result-figure">
-          <img src="static/images/mol_results.png" alt="Molecule optimization results">
-        </figure>
-        <figure class="result-figure">
-          <img src="static/images/protein_results.png" alt="Protein optimization results">
-        </figure>
-      </div>
+      <p class="quantitative-caption">TRS outperforms all baselines under identical compute budgets across text-to-image, molecule, and protein tasks.</p>
     </div>
-    <p class="quantitative-caption">TRS wins on rewards across all domains under the same compute budget.</p>
   </div>
 </section>
 
 <section class="section" id="BibTeX">
   <div class="container is-max-desktop content">
-    <h2 class="title">BibTeX</h2>
+    <h2 class="title has-text-centered">BibTeX</h2>
     <pre><code>Coming soon – citation will be available once the arXiv preprint is public.</code></pre>
   </div>
 </section>
 
 <footer class="footer">
   <div class="content has-text-centered">
-    <p>Page by Niklas Schweiger. Based on the Academic Project Page Template by Eliahu Horwitz.</p>
+    <p>Page by Niklas Schweiger. Based on the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template">Academic Project Page Template</a>.</p>
   </div>
 </footer>
 
