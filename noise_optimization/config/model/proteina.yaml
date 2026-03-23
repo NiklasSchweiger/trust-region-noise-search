@@ -1,0 +1,44 @@
+# Proteina Pipeline
+# Protein structure generation using flow matching
+
+ckpt_path: null  # REQUIRED: Path to Proteina checkpoint
+n_residues: 100
+dt: 0.0025
+schedule_mode: log
+schedule_p: 2.0
+sampling_mode: vf # vf (variational flow) or sc (self-conditioning) - sc gives much better designability rewards
+sc_scale_noise: 0.4
+sc_scale_score: 1.0
+gt_mode: "1/t"
+gt_p: 1.0
+gt_clamp_val: null
+guidance_weight: 1.0
+autoguidance_ratio: 1.0  # Use autoguidance for better results (matches inference_base.yaml)
+self_cond: false
+fold_cond: false
+autoguidance_ckpt_path: null
+
+# Fold metric checkpoint (defaults to proteina_additional_files/.../gearnet_ca.pth)
+fold_metric_ckpt: null
+
+# Fold conditional settings
+len_cath_code_path: null
+cath_code_level: "C"
+
+# Legacy fold conditions
+fold_conditions:
+  - fold_code: "1.10.x.x"
+    #n_residues: 120
+  - fold_code: "2.60.x.x"
+   # n_residues: 140
+  - fold_code: "3.40.x.x"
+   # n_residues: 160
+
+# Motif scaffolding tasks
+motif_tasks: null
+
+# Diversity and novelty tracking (optional, disabled by default)
+# When enabled, tracks structural diversity within batches and novelty vs previously seen structures
+# This adds minimal computational overhead (fast unaligned distance calculations)
+track_diversity: false
+

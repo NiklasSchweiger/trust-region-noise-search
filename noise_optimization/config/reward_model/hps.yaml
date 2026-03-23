@@ -1,0 +1,4 @@
+_partial_: true
+_target_: noise_optimization.core.rewards.image.t2i_rewards.HPSv2RewardHF
+
+device: cuda

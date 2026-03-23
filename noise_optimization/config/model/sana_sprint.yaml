@@ -1,0 +1,16 @@
+# SANA-Sprint Pipeline
+# Ultra-fast 1-4 step text-to-image generation (NVIDIA / MIT HAN Lab)
+# Uses: Efficient-Large-Model/Sana_Sprint_1.6B_1024px_diffusers
+
+type: sana_sprint
+model_id: Efficient-Large-Model/Sana_Sprint_1.6B_1024px_diffusers
+height: 1024
+width: 1024
+num_inference_steps: 2
+classifier_free_guidance: true
+guidance_scale: 4.5
+device_map: null
+dtype: bfloat16
+cache_dir: null
+device: cuda
+output_type: pil

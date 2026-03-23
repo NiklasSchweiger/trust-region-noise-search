@@ -1,0 +1,15 @@
+# @package _global_
+# ============================================================================
+# IMAGE MODALITY
+# ============================================================================
+# Text-to-image generation using Stable Diffusion variants
+# Usage: python main.py modality=image
+# ============================================================================
+
+defaults:
+  - /benchmark: draw_bench # draw_bench | ...
+  - /reward_function: image_reward # image_reward | hps | pick_score | ...
+  - /model: sd # sd | sdxl | sdxl_lightning | sana_sprint | ...
+
+# Set the modality field for pipeline routing
+modality: image

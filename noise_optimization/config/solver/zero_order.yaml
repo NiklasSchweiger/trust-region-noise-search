@@ -1,0 +1,12 @@
+# Zero-Order Optimization (ZOO)
+# Gradient-free optimization using finite differences
+
+name: zero_order
+
+num_iterations: 20
+batch_size: 20
+warmup_batches: 0
+step_size: 0.1
+
+
+

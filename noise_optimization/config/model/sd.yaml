@@ -1,0 +1,21 @@
+# Stable Diffusion 1.5 Pipeline
+# Standard text-to-image generation
+
+type: sd
+model_id: stable-diffusion-v1-5/stable-diffusion-v1-5
+height: 512
+width: 512
+num_inference_steps: 50
+classifier_free_guidance: true
+guidance_scale: 7.5
+device_map: null
+dtype: float16
+cache_dir: null
+xformers_mem_eff_attn: false
+cpu_offload: false
+quantize: false
+device: cuda
+output_type: pil
+quantize_cfg:
+  bits: 4bit  # 4bit | 8bit
+

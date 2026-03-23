@@ -1,0 +1,11 @@
+_partial_: true
+
+# Radial brightness reward - rewards images based on center-weighted brightness
+# Gives higher weight to pixels in the center of the image
+# Registered in the reward function registry
+# Usage: reward_model=radial_brightness
+reward:
+  name: radial_brightness
+  device: cuda
+  dtype: float32
+

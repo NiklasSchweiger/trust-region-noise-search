@@ -1,0 +1,128 @@
+# ============================================================================
+# NOISE OPTIMIZATION - Main Configuration
+# ============================================================================
+# Reward-guided noise optimization for generative models.
+# Supports: text-to-image, molecules (QM9), large molecules (GEOM-Drugs), proteins
+#
+# USAGE:
+#   python main.py modality=image      # Text-to-image (default)
+#   python main.py modality=protein    # Protein design
+#   python main.py modality=qm9_target  # Small molecules (QM9 multi-property)
+#
+# Each modality automatically sets the correct benchmark, reward, and model.
+# Override solver: solver=trs | random_search | zero_order
+# Override specific settings: benchmark=protein_fold_conditional reward_function=designability
+# ============================================================================
+
+# ============================================================================
+# DEFAULTS (Hydra config composition)
+# ============================================================================
+defaults:
+  - _self_
+  # Modality sets: benchmark, reward_function, model, and modality-specific settings
+  - modality: image
+  # Solver configuration (independent of modality)
+  - solver: trs
+
+# ============================================================================
+# EXPERIMENT SETTINGS
+# ============================================================================
+wandb: true
+wandb_project: noise_optimization
+wandb_name: null
+# Directory for wandb run files (logs, run data). If null, wandb uses its default or WANDB_DIR env.
+wandb_dir: null
+device: cuda
+
+# ============================================================================
+# OPTIMIZATION BUDGET
+# ============================================================================
+oracle_budget: 400
+num_runs: 1000
+start_index: null
+end_index: null
+
+# ============================================================================
+# PROMPT SHORTCUT (for image modality)
+# ============================================================================
+# Use prompt="Your prompt here" to automatically create a CustomPromptBenchmark
+# Example: python main.py prompt="Rio Movie Poster" reward_function=aesthetic
+prompt: null
+
+# ============================================================================
+# STRUCTURE SHORTCUTS (for protein modality)
+# ============================================================================
+# Use n_residues=X to automatically set protein length
+# Use n_atoms=X to automatically set molecule size
+n_residues: null
+n_atoms: null
+
+# ============================================================================
+# LOGGING CONFIGURATION
+# ============================================================================
+logging:
+  wandb:
+    iteration:
+      enabled: true
+      log_metrics: true
+      log_data_samples: false
+      data_sample_limit: 4
+      log_operator_stats: true
+    benchmark:
+      enabled: true
+      log_best_data_sample: true
+      log_running_best_data_sample: true
+      log_reward_curve: true
+    scaling:
+      enabled: false
+      budget_checkpoints: [100, 200, 300, 400]
+      log_running_average: true
+      # Scaling checkpoint images (wandb + disk) off by default; set true only if needed (t2i can fill disk quickly)
+      log_checkpoint_data_samples: false
+  terminal:
+    iteration:
+      enabled: true
+      verbosity: minimal
+    benchmark:
+      enabled: true
+      verbosity: summary
+      log_best_data_sample: true
+      log_running_best_data_sample: true
+      log_reward_curve: true
+    scaling:
+      enabled: true
+      verbosity: summary
+
+# ============================================================================
+# SUMMARY OPTIONS
+# ============================================================================
+print_benchmark_summary: true
+print_solver_summary: true
+print_solver_config: true  # Print detailed solver configuration at start
+
+# ============================================================================
+# REWARD CONFIGURATION
+# ============================================================================
+reward:
+  objective: max  
+  stateful: true
+  device: cuda
+  dtype: float16
+  model_name: null
+
+objective: null
+objective_weights: null
+
+# Save best structure/image per task to disk for later visualization.
+# Protein: writes PDB (atom37 if available); Molecules: writes PDB best-effort; Images: writes JPG (default) or PNG.
+save_outputs: false
+save_outputs_dir: outputs
+save_format: jpg  # 'jpg' or 'png' (applies to image modality)
+
+# Write a run-level results CSV (task_id, best_reward, num_evaluations) to save_outputs_dir when true.
+save_results_csv: false
+
+# Optional: also save "best-so-far at each scaling checkpoint" structures (can be many files).
+# This is intentionally OFF by default.
+save_checkpoint_structures: false
+

@@ -1,0 +1,26 @@
+# Random Search Baseline
+# Simple random sampling without any optimization
+
+name: random_search
+
+num_iterations: 15
+batch_size: 24
+warmup_batches: 0
+
+# Sampling mode: auto (default, uses problem.sample if available), problem, gaussian, sobol_erfinv
+# sampling_mode: auto
+
+# Use Sobol + erfinv for sampling (alternative to sampling_mode="sobol_erfinv")
+# use_sobol_sampling: false
+
+# Sobol scrambling (default: true for better coverage, still deterministic with seed)
+# sobol_scramble: true
+
+# Seed for deterministic sampling (if not set, uses global seed from config.seed)
+# seed: null
+
+# Testing option: use combined Gaussian (single scale) vs separate distributions
+# - false (default): Uses problem.sample() for sampling
+# - true: Uses single scale (1.0) for all components (combined Gaussian)
+use_combined_gaussian: false
+

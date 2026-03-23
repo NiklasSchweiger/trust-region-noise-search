@@ -1,0 +1,9 @@
+# @package _global_
+
+_target_: noise_optimization.core.benchmarks.molecule.QM9PropertyTargetsBenchmark
+# Available QM9 properties: alpha, gap, homo, lumo, mu, Cv
+# Can override via CLI: +benchmark.properties=[alpha,mu] or +benchmark.properties=[gap]
+properties: [alpha, gap, homo, lumo, mu, Cv]  # All 6 QM9 properties by default
+# num_runs will be passed from the main config when benchmark is instantiated
+# seed ensures deterministic task generation for fair comparison between algorithms
+seed: 42

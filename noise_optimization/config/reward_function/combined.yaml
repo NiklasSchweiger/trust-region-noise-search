@@ -1,0 +1,14 @@
+# 
+_target_: core.rewards.image.t2i_rewards.CombinedRewardHF
+
+# The registry will use these keys to instantiate the sub-classes
+rewards:
+  - "clip"
+  - "aesthetic"
+
+# Note: In the code, CLIP is multiplied by 20.0 before these weights are applied.
+# A 0.5/0.5 split here represents an equal balance of the scaled objectives.
+weights:
+  - 0.5
+  - 0.5
+

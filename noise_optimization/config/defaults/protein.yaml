@@ -1,0 +1,52 @@
+# @package _global_
+# ============================================================================
+# PROTEIN (PROTEINA) MODALITY DEFAULTS
+# ============================================================================
+# Load with: python main.py +defaults=protein
+# Sets appropriate settings for protein design with Proteina
+# ============================================================================
+
+# Override modality
+modality: protein
+
+# Proteina-specific settings
+proteina:
+  ckpt_path: /path/to/proteina/checkpoints/proteina_v1.3_DFS_60M_notri.ckpt
+  n_residues: 100
+  dt: 0.0025
+  schedule_mode: log
+  schedule_p: 2.0
+  sampling_mode: vf
+  sc_scale_noise: 0.4
+  sc_scale_score: 1.0
+  gt_mode: "1/t"
+  gt_p: 1.0
+  gt_clamp_val: null
+  guidance_weight: 1.0
+  autoguidance_ratio: 0.0
+  self_cond: false
+  fold_cond: false
+  autoguidance_ckpt_path: null
+  lengths: null
+  benchmark:
+    min_length: 50
+    max_length: 274
+    num_samples: 200
+    sample_seed: 42
+    shuffle: false
+    seed: 0
+    repeat: 1
+    start_index: null
+    end_index: null
+    num_runs: null
+  fold_metric_ckpt: null
+  len_cath_code_path: null
+  cath_code_level: "C"
+  fold_conditions:
+    - fold_code: "1.10.x.x"
+    - fold_code: "2.60.x.x"
+    - fold_code: "3.40.x.x"
+  motif_tasks: null
+  # Diversity and novelty tracking (optional, disabled by default)
+  track_diversity: false
+

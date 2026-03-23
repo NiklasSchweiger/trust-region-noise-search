@@ -1,0 +1,22 @@
+# Fixed-length protein benchmark
+# Generates proteins with EXACTLY the same number of residues for each task.
+# This is useful for computing diversity/novelty metrics on homogeneous sets.
+#
+# Override the length and num_samples from command line:
+#   benchmark.min_length=50 benchmark.max_length=50 benchmark.num_samples=2
+#
+_target_: noise_optimization.core.benchmarks.protein.ProteinLengthBenchmark
+num_runs: ${num_runs}
+# Don't use lengths from proteina config - we'll sample instead
+lengths: null
+repeat: 1
+shuffle: false
+seed: 0
+
+# FIXED LENGTH CONFIGURATION
+# Set min_length == max_length to get proteins of exactly that size
+min_length: 100  # Default to 100 residues (override via CLI: benchmark.min_length=50)
+max_length: 100  # Must equal min_length for fixed length (override via CLI: benchmark.max_length=50)
+num_samples: 100  # Number of proteins to generate (override via CLI: benchmark.num_samples=2)
+sample_seed: 42
+

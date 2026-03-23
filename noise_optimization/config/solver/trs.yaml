@@ -1,0 +1,39 @@
+# Trust Region Search (TuRBO-style)
+# High-dimensional optimization via local trust region search with adaptive sizing
+
+name: trs
+
+num_iterations: 20
+batch_size: 20
+warmup_batches: 4
+num_regions: 15
+init_sampling_mode: sobol  # sobol | gaussian (warm-up sampling)
+search_sampling_mode: sobol  # sobol | gaussian (search phase)
+
+# Trust-region parameters
+tr:
+  update_factor: 1.5
+  init_length: 0.8
+  min_length: 0.05
+  max_length: 2.4
+  success_tolerance: 3
+  failure_tolerance: 3
+  length_update: standard
+
+# Center selection: global top-k over total observed history (paper default)
+center_selection: global_topk
+
+# Perturbation (prob_perturb null = sample uniformly in [perturb_min_frac, perturb_max_frac])
+prob_perturb: null
+perturb_min_frac: 0.1
+perturb_max_frac: 0.9
+
+# Trust region shape
+shape: hypercube
+
+# Bounded archive: keep only top N points by reward (null = unbounded)
+archive_max_size: null
+
+# Sobol fast-forward (only path used in practice)
+use_fast_forward: true
+max_sobol_index: 128

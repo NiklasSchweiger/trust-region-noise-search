@@ -1,0 +1,29 @@
+# Create: conda create -n trns python=3.10 && conda activate trns
+# Install: pip install -e .  (then optional extras below)
+
+# Core (also in pyproject.toml)
+torch>=2.5.0
+torchvision>=0.20.0
+diffusers==0.34.0
+transformers==4.53.2
+accelerate==1.9.0
+hydra-core==1.3.2
+wandb>=0.16
+numpy>=1.24
+scipy>=1.10
+pillow>=9.5
+tqdm>=4.66
+matplotlib>=3.7
+scikit-learn>=1.3
+imageio>=2.31
+
+# Optional: terminal output
+rich>=13.0
+
+# Optional: molecule / QM9 experiments
+torchdiffeq==0.2.4
+rdkit
+
+# Optional: image reward models (install separately if needed)
+# pip install image-reward
+# pip install hpsv2

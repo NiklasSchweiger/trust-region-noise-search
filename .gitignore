@@ -1,0 +1,61 @@
+# Runtime outputs
+batch_logs/
+outputs/
+results/
+store/
+tmp/
+tmp_*/
+wandb/
+.hydra/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+.eggs/
+dist/
+build/
+*.so
+
+# Large data files (proteina)
+*.fasta
+*.tsv
+d_21M_index.txt
+d_FS_index.txt
+proteina_additional_files/
+proteina_additional_files.zip
+proteina_training_data_indices.zip
+lightning_logs/
+save/
+*.tar.gz
+*.zip
+
+# Jupyter notebooks checkpoints
+.ipynb_checkpoints/
+
+# IDE / editor
+.vscode/
+.idea/
+.cursor/
+*.swp
+*.swo
+
+# Logs
+nohup.out
+*.log
+
+# Model checkpoints (too large)
+*.ckpt
+*.pt
+*.pth
+
+# Environment
+.env
+**/.env
+
+# Proteina inference data (large binary files; download separately)
+noise_optimization/proteina/inference/*.pdb
+noise_optimization/proteina/inference/*.pt
+noise_optimization/proteina/inference/*.npy
+noise_optimization/proteina/inference/*.pkl

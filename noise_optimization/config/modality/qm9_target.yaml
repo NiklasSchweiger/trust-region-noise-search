@@ -1,0 +1,33 @@
+# @package _global_
+# ============================================================================
+# QM9 TARGET MATCHING MODALITY
+# ============================================================================
+# Small molecule generation using EquiFM with property target matching
+# Usage: python main.py modality=qm9_target
+# ============================================================================
+
+defaults:
+  - /benchmark: qm9_properties
+  - /reward_function: multi_property_target
+  - /model: equifm
+
+# Set the modality field for pipeline routing
+modality: qm9_target
+
+# Default solver settings for this modality
+solver:
+  batch_size: 100
+  num_iterations: 20
+
+# Ensure budget is large enough for default iterations
+oracle_budget: 2000
+num_runs: 100
+
+# Molecule-specific settings
+molecule:
+  generator:
+    type: qm9_flow
+    n_step: 50
+    weights_path: null  # Uses bundled pretrained EquiFM weights by default
+  # Benchmark is configured via /benchmark: qm9_properties in defaults
+  # Properties can be overridden via CLI: +benchmark.properties=[alpha,mu]

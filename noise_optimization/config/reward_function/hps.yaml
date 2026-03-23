@@ -1,0 +1,8 @@
+_partial_: true
+_target_: noise_optimization.core.rewards.image.t2i_rewards.HPSv2RewardHF
+
+device: cuda
+# Use official hpsv2 API (PIL path). Set to true only when solver needs gradients (e.g. DNO).
+differentiable: false
+metadata:
+  hps_version: "v2.1"  # Match Reworked-Diffusion-Tree-Sampling default

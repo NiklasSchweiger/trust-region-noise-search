@@ -1,0 +1,61 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "noise-optimization"
+version = "0.1.0"
+description = "Trust-Region Noise Search for Black-Box Alignment of Diffusion and Flow Models"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+keywords = ["black-box optimization", "diffusion models", "flow models", "trust region", "alignment"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "torch>=2.5.0",
+    "torchvision>=0.20.0",
+    "diffusers==0.34.0",
+    "transformers==4.53.2",
+    "accelerate==1.9.0",
+    "hydra-core==1.3.2",
+    "wandb>=0.16",
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "pillow>=9.5",
+    "tqdm>=4.66",
+    "matplotlib>=3.7",
+    "scikit-learn>=1.3",
+    "imageio>=2.31",
+    "rich>=13.0",
+]
+
+[project.optional-dependencies]
+molecule = [
+    "torchdiffeq==0.2.4",
+    "rdkit",
+]
+image-rewards = [
+    "image-reward",
+    "hpsv2",
+]
+all = [
+    "noise-optimization[molecule,image-rewards]",
+]
+
+[project.urls]
+Homepage = "https://github.com/niklasschweiger/trust-region-noise-search"
+Repository = "https://github.com/niklasschweiger/trust-region-noise-search"
+Paper = "https://arxiv.org/abs/2603.14504"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["noise_optimization*"]
+exclude = ["noise_optimization/proteina*"]

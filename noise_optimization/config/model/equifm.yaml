@@ -1,0 +1,6 @@
+# EquiFM Molecule Flow (QM9)
+# Small molecule generation using EquiFM / OC-Flow
+
+type: qm9_flow
+n_step: 50
+weights_path: null  # Optional: path to .npy/.pt checkpoint

@@ -1,0 +1,6 @@
+_target_: noise_optimization.core.benchmarks.t2i.DrawBenchBenchmark
+num_runs: ${num_runs}
+randomize: false
+path: null
+version: null  # 10 | 50 | 100 | full
+max_prompts: null

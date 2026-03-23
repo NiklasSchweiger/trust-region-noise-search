@@ -1,0 +1,7 @@
+# Multi-property target reward for QM9 molecules
+# Reads properties and targets from context (provided by QM9PropertyTargetsBenchmark)
+
+_target_: noise_optimization.core.rewards.molecule.MultiPropertyTargetReward
+device: ${reward.device}
+weights: null  # Optional: dict of property_name -> weight (e.g., {alpha: 1.0, gap: 0.5})
+

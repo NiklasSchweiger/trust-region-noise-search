@@ -1,0 +1,21 @@
+# Stable Diffusion XL Lightning Pipeline
+# 8-step distilled version for fast generation
+
+type: sdxl_lightning
+model_id: stabilityai/stable-diffusion-xl-base-1.0 # stabilityai/stable-diffusion-xl-base-1.0
+height: 1024
+width: 1024
+num_inference_steps: 8
+classifier_free_guidance: true
+guidance_scale: 0.0
+device_map: null
+dtype: float16
+cache_dir: null
+xformers_mem_eff_attn: true
+cpu_offload: true
+quantize: false
+device: cuda
+output_type: pil
+quantize_cfg:
+  bits: 4bit
+

@@ -1,0 +1,3 @@
+_target_: my_image.data.sample_data.SobolData
+
+sample_rate: 0.2

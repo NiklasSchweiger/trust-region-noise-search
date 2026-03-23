@@ -1,0 +1,10 @@
+_partial_: true
+
+# Saturation reward - rewards images based on color saturation/vibrancy
+# Registered in the reward function registry
+# Usage: reward_model=saturation
+reward:
+  name: saturation
+  device: cuda
+  dtype: float32
+

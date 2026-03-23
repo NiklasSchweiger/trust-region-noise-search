@@ -1,0 +1,10 @@
+_partial_: true
+
+# JPEG compressibility reward - rewards images that compress well (lower is better)
+# Registered in the reward function registry
+# Usage: reward_model=jpeg_compressibility
+reward:
+  name: jpeg_compressibility
+  device: cuda
+  dtype: float32
+
