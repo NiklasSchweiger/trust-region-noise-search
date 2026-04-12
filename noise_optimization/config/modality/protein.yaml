@@ -8,7 +8,7 @@
 # ============================================================================
 
 defaults:
-  - /benchmark: protein_lengths
+  - /benchmark: protein_fixed_length
   - /reward_function: designability  # Use designability (scRMSD) to match inference.py evaluation
   - /model: proteina
 
