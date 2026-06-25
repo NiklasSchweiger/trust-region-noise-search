@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TRS — 3D structure viewer (Mol*)</title>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/molstar@4.7.0/build/viewer/molstar.css" />
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/molstar@4.7.0/build/viewer/molstar.js"></script>
+<style>
+  :root{--text:#0f172a;--sub:#64748b;--card:#ffffff;--bg:#f1f5f9;--line:#e2e8f0;--primary:#2563eb;--viewbg:#ffffff;--good:#16a34a;}
+  body.dark{--text:#e2e8f0;--sub:#94a3b8;--card:#0b1220;--bg:#020617;--line:#1e293b;--primary:#60a5fa;--viewbg:#0b1220;--good:#4ade80;}
+  html,body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif;}
+  .wrap{max-width:880px;margin:30px auto;padding:0 18px;}
+  h1{font-size:1.2rem;margin:0 0 .2rem;font-weight:700;}
+  p.sub{color:var(--sub);margin:0 0 1.2rem;font-size:.92rem;line-height:1.55;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 8px 24px -12px rgb(0 0 0 /.25);padding:16px 18px 18px;}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px;}
+  .row .lbl{font-size:.74rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--sub);margin-right:2px;}
+  .chip{font:inherit;font-size:.82rem;font-weight:600;cursor:pointer;border:1px solid var(--line);background:transparent;color:var(--sub);border-radius:999px;padding:6px 13px;}
+  .chip.on{background:var(--primary);border-color:var(--primary);color:#fff;}
+  .chip.base.on{background:var(--text);border-color:var(--text);color:var(--card);}
+  .pair{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px;}
+  @media(max-width:560px){.pair{grid-template-columns:1fr;}}
+  .pane{position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:var(--viewbg);aspect-ratio:1/1;}
+  .pane.ours{border:2.5px solid var(--primary);}
+  .mol{position:absolute;inset:0;width:100%;height:100%;}
+  .mol canvas{outline:none;}
+  .plabel{position:absolute;left:10px;top:10px;z-index:5;font-size:.74rem;font-weight:700;color:#fff;background:rgba(15,23,42,.66);backdrop-filter:blur(3px);padding:4px 10px;border-radius:7px;pointer-events:none;}
+  .pane.ours .plabel{background:var(--primary);}
+  .metric{position:absolute;right:10px;bottom:10px;z-index:5;font-size:.72rem;font-weight:700;color:var(--text);background:color-mix(in srgb,var(--card) 82%,transparent);border:1px solid var(--line);padding:4px 9px;border-radius:7px;pointer-events:none;}
+  .metric.win{color:var(--good);border-color:color-mix(in srgb,var(--good) 50%,var(--line));}
+  .ctl{display:flex;gap:14px;align-items:center;margin-top:13px;color:var(--sub);font-size:.82rem;}
+  .ctl button{font:inherit;font-size:.8rem;font-weight:600;cursor:pointer;border:1px solid var(--line);background:transparent;color:var(--text);border-radius:8px;padding:6px 12px;}
+  .ctl .desc{line-height:1.45;}
+  .toggle{position:fixed;top:14px;right:14px;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:9px;padding:7px 12px;cursor:pointer;font:inherit;z-index:9;}
+  /* hide Mol* built-in UI chrome for a clean embedded look */
+  .msp-plugin .msp-layout-expanded,.msp-plugin .msp-viewport-controls,.msp-plugin .msp-highlight-toast-wrapper{display:none!important;}
+</style>
+</head>
+<body>
+<button class="toggle" onclick="toggleTheme()">◐ theme</button>
+<div class="wrap">
+  <h1>3D structures: TRS vs. baseline</h1>
+  <p class="sub">Same design target and compute budget — only the search method differs. Drag to rotate, scroll to zoom. Rendered with Mol* (the rcsb.org/3d-view engine).</p>
+  <div class="card">
+    <div class="row" id="caseRow"><span class="lbl">Task</span></div>
+    <div class="row" id="baseRow"><span class="lbl">Compare vs.</span></div>
+    <div class="pair">
+      <div class="pane ours"><span class="plabel">TRS (Ours)</span><div class="mol" id="mL"></div><div class="metric" id="metL"></div></div>
+      <div class="pane"><span class="plabel" id="bLbl">Baseline</span><div class="mol" id="mR"></div><div class="metric" id="metR"></div></div>
+    </div>
+    <div class="ctl">
+      <button onclick="toggleSpin()" id="spinBtn">⏸ pause spin</button>
+      <span class="desc" id="desc"></span>
+    </div>
+  </div>
+</div>
+<script>
+const S='assets/structures/';
+const STEEL=0x4f93cf;  // light blue to match the figure's protein cartoon (sampled #3d86c6–#4090d0, lit)
+const RES=Math.min(3, (window.devicePixelRatio||1) * 1.5);  // 3D render resolution — raise (e.g. *2) for sharper, lower for faster
+// `val` numbers are the annotations from the paper figure (Fig. mols_and_prots).
+// metric:'loss' → lower is better (molecules); metric:'reward' → higher is better (proteins, designability).
+const CASES=[
+  {key:'prot100',label:'Protein · 100 res',kind:'protein',metric:'reward',better:'high',
+   desc:'100-residue designed backbone, rendered as cartoon (Mol* secondary structure). Number = designability reward (higher is better).',
+   trs:{file:S+'visualization_pdb__100res__trs_vf_task0000_proteina.pdb',val:0.45},
+   bases:[
+     {name:'Random Search',file:S+'visualization_pdb__100res__random_search_vf_task0000_proteina.pdb',val:0.33},
+     {name:'Zero-order',file:S+'visualization_pdb__100res__zero_order_vf_task0000_proteina.pdb',val:0.39},
+     {name:'Naive',file:S+'visualization_pdb__100res__naive_vf_task0000_proteina.pdb'},
+   ]},
+  {key:'prot50',label:'Protein · 50 res',kind:'protein',metric:'reward',better:'high',
+   desc:'50-residue designed backbone, rendered as cartoon (Mol* secondary structure). Number = designability reward (higher is better).',
+   trs:{file:S+'visualization_pdb__50res__trs_vf_task0000_proteina.pdb',val:0.65},
+   bases:[
+     {name:'Random Search',file:S+'visualization_pdb__50res__random_search_vf_task0000_proteina.pdb',val:0.53},
+     {name:'Zero-order',file:S+'visualization_pdb__50res__zero_order_vf_task0000_proteina.pdb',val:0.59},
+     {name:'Naive',file:S+'visualization_pdb__50res__naive_vf_task0000_proteina.pdb'},
+   ]},
+  {key:'mol3',label:'Molecule · 3-prop target',kind:'mol',metric:'loss',better:'low',
+   desc:'Molecule optimized to match a 3-property QM9 target (L₃), ball-and-stick by element. Number = loss (lower is better).',
+   trs:{file:S+'molecule_same_target_summary_3prop__best_trs.pdb',val:0.37},
+   bases:[
+     {name:'Random Search',file:S+'molecule_same_target_summary_3prop__best_random_search.pdb',val:0.63},
+     {name:'Zero-order',file:S+'molecule_same_target_summary_3prop__best_zero_order.pdb',val:0.60},
+     {name:'OC-Flow',file:S+'molecule_same_target_summary_3prop__best_oc_flow.pdb',val:1.04},
+   ]},
+  {key:'mol6',label:'Molecule · 6-prop target',kind:'mol',metric:'loss',better:'low',
+   desc:'Molecule optimized to match a harder 6-property QM9 target (L₆), ball-and-stick by element. Number = loss (lower is better).',
+   trs:{file:S+'molecule_same_target_summary_6prop__best_trs.pdb',val:0.55},
+   bases:[
+     {name:'Random Search',file:S+'molecule_same_target_summary_6prop__best_random_search.pdb',val:0.62},
+     {name:'Zero-order',file:S+'molecule_same_target_summary_6prop__best_zero_order.pdb',val:0.59},
+     {name:'OC-Flow',file:S+'molecule_same_target_summary_6prop__best_oc_flow.pdb',val:0.93},
+   ]},
+];
+let cur=0, baseIdx=0, spinning=new URLSearchParams(location.search).get('spin')!=='0';
+const V={};  // viewer instances by pane id
+
+function bg(){return document.body.classList.contains('dark')?0x0b1220:0xffffff;}
+async function ensureViewer(id){
+  if(V[id])return V[id];
+  const v=await molstar.Viewer.create(id,{
+    layoutIsExpanded:false,layoutShowControls:false,layoutShowRemoteState:false,
+    layoutShowSequence:false,layoutShowLog:false,layoutShowLeftPanel:false,
+    viewportShowExpand:false,viewportShowControls:false,viewportShowSettings:false,
+    viewportShowSelectionMode:false,viewportShowAnimation:false,
+    pdbProvider:'rcsb',emdbProvider:'rcsb',
+    pixelScale:RES,   // render resolution multiplier — raise for crisper, lower for faster
+  });
+  V[id]=v;
+  v.plugin.canvas3d?.setProps({
+    renderer:{backgroundColor:bg()},
+    camera:{helper:{axes:{name:'off',params:{}}}},
+  });
+  return v;
+}
+function resizeViewer(v){ try{ v.handleResize?.(); v.plugin.canvas3d?.handleResize?.(); }catch(e){} }
+async function loadPane(id,spec,kind){
+  try{
+    const v=await ensureViewer(id);
+    const p=v.plugin;
+    resizeViewer(v);
+    await p.clear();
+    await v.loadStructureFromUrl(spec.file,'pdb',false);
+    // recolor to match the paper figure: proteins → uniform steel-blue cartoon;
+    // molecules → element colors but with GREY carbons (figure uses CPK grey, not Mol*'s default green)
+    const comps=p.managers.structure.hierarchy.current.structures.flatMap(s=>s.components);
+    try{
+      if(kind==='protein'){
+        await p.managers.structure.component.updateRepresentationsTheme(comps,{color:'uniform',colorParams:{value:STEEL}});
+      }else{
+        await p.managers.structure.component.updateRepresentationsTheme(comps,{color:'element-symbol',
+          colorParams:{carbonColor:{name:'uniform',params:{value:0x999999}}}});
+      }
+    }catch(e){}
+    p.canvas3d?.setProps({renderer:{backgroundColor:bg()},camera:{helper:{axes:{name:'off',params:{}}}}});
+    applySpin(v);
+    resizeViewer(v);
+    setTimeout(()=>{ resizeViewer(v); p.canvas3d?.requestCameraReset?.(); },120);
+    setTimeout(()=>resizeViewer(v),700);
+  }catch(e){ console.error('loadPane',id,e); }
+}
+function applySpin(v){
+  v.plugin.canvas3d?.setProps({trackball:{animate:spinning?{name:'spin',params:{speed:0.7}}:{name:'off',params:{}}}});
+}
+function toggleSpin(){spinning=!spinning;document.getElementById('spinBtn').textContent=spinning?'⏸ pause spin':'▶ resume spin';
+  Object.values(V).forEach(applySpin);}
+function toggleTheme(){document.body.classList.toggle('dark');
+  Object.values(V).forEach(v=>v.plugin.canvas3d?.setProps({renderer:{backgroundColor:bg()}}));}
+
+function fmt(x){return x.toFixed(2);}
+function render(){
+  const c=CASES[cur];if(baseIdx>=c.bases.length)baseIdx=0;const b=c.bases[baseIdx];
+  const cr=document.getElementById('caseRow');[...cr.querySelectorAll('.chip')].forEach(e=>e.remove());
+  CASES.forEach((cc,i)=>{const el=document.createElement('button');el.className='chip'+(i===cur?' on':'');el.textContent=cc.label;el.onclick=()=>{cur=i;baseIdx=0;render();};cr.appendChild(el);});
+  const br=document.getElementById('baseRow');[...br.querySelectorAll('.chip')].forEach(e=>e.remove());
+  c.bases.forEach((bb,i)=>{const el=document.createElement('button');el.className='chip base'+(i===baseIdx?' on':'');el.textContent=bb.name;el.onclick=()=>{baseIdx=i;render();};br.appendChild(el);});
+  document.getElementById('desc').textContent=c.desc;
+  document.getElementById('bLbl').textContent=b.name;
+  // metric badges from the paper figure: molecules = loss (lower better), proteins = designability reward (higher better).
+  // TRS is the best in every panel, so its badge is always the green "win".
+  const mL=document.getElementById('metL'),mR=document.getElementById('metR');
+  const lab=c.metric;  // 'loss' | 'reward'
+  mL.textContent=c.trs.val!=null?`${lab} ${fmt(c.trs.val)}`:'';mL.className='metric'+(c.trs.val!=null?' win':'');
+  mR.textContent=b.val!=null?`${lab} ${fmt(b.val)}`:'';mR.className='metric';
+  loadPane('mL',c.trs,c.kind);
+  loadPane('mR',b,c.kind);
+}
+if(new URLSearchParams(location.search).has('embed'))document.body.classList.add('embed');
+const _q=new URLSearchParams(location.search);if(_q.has('case'))cur=+_q.get('case');
+window.addEventListener('load',render);
+</script>
+<style>
+  body.embed{background:transparent;}
+  body.embed .wrap{margin:0;max-width:none;padding:0;}
+  body.embed .wrap>h1,body.embed .wrap>p.sub,body.embed .toggle{display:none;}
+  body.embed .card{border-radius:0;border:none;box-shadow:none;}
+</style>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TRS — text-to-image gallery</title>
+<style>
+  :root{--text:#0f172a;--sub:#64748b;--card:#ffffff;--bg:#f1f5f9;--line:#e2e8f0;--primary:#2563eb;}
+  body.dark{--text:#e2e8f0;--sub:#94a3b8;--card:#0b1220;--bg:#020617;--line:#1e293b;--primary:#60a5fa;}
+  html,body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif;}
+  .wrap{max-width:880px;margin:30px auto;padding:0 18px;}
+  h1{font-size:1.2rem;margin:0 0 .2rem;font-weight:700;}
+  p.sub{color:var(--sub);margin:0 0 1.2rem;font-size:.92rem;line-height:1.55;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 8px 24px -12px rgb(0 0 0 /.25);padding:16px 18px 20px;}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;}
+  .chip{font:inherit;font-size:.82rem;font-weight:600;cursor:pointer;border:1px solid var(--line);background:transparent;color:var(--sub);border-radius:999px;padding:6px 13px;}
+  .chip.on{background:var(--primary);border-color:var(--primary);color:#fff;}
+  .prompt{margin:14px 2px 14px;font-size:1rem;}
+  .prompt .q{color:var(--sub);font-weight:600;}
+  .prompt b{font-weight:700;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;}
+  .cell{position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:var(--card);transition:transform .18s,box-shadow .18s;}
+  .imgwrap{aspect-ratio:1/1;background:#000;overflow:hidden;}
+  .cell img{width:100%;height:100%;object-fit:cover;display:block;}
+  .cell:hover{transform:scale(1.03);box-shadow:0 10px 24px -8px rgb(0 0 0 /.4);z-index:2;}
+  .cell.ours{border:2.5px solid var(--primary);box-shadow:0 6px 18px -6px color-mix(in srgb,var(--primary) 60%,transparent);}
+  /* method label sits in a strip BELOW the image so nothing covers the picture */
+  .cap{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:6px 10px;font-size:.72rem;font-weight:700;color:var(--text);background:var(--card);border-top:1px solid var(--line);}
+  .cell.ours .cap{background:var(--primary);color:#fff;border-top-color:var(--primary);}
+  .cap .mark{font-size:.6rem;font-weight:800;letter-spacing:.05em;}
+  .toggle{position:fixed;top:14px;right:14px;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:9px;padding:7px 12px;cursor:pointer;font:inherit;}
+  .hint{margin-top:14px;color:var(--sub);font-size:.8rem;text-align:center;}
+</style>
+</head>
+<body>
+<button class="toggle" onclick="document.body.classList.toggle('dark')">◐ theme</button>
+<div class="wrap">
+  <h1>Text-to-image: TRS vs. every baseline</h1>
+  <p class="sub">Same SDXL model and prompt — only the search method differs. Pick a prompt and compare TRS against each baseline. Hover to enlarge.</p>
+  <div class="card">
+    <div class="chips" id="chips"></div>
+    <div class="prompt" id="prompt"></div>
+    <div class="grid" id="grid"></div>
+    <p class="hint">TRS (highlighted) reaches better prompt alignment than Random Search, Zero-order, DTS*, GNSO and OC under the same budget.</p>
+  </div>
+</div>
+<script>
+const METHODS={trs:'TRS (Ours)',rs:'Random Search',zo:'Zero-order',dts:'DTS*',gnso:'GNSO',oc:'OC'};
+const ORDER=['trs','rs','zo','dts','gnso','oc'];
+const EX=[
+  {key:'cars',label:'Five cars',prompt:'Five cars on a street.',m:['trs','rs','zo','dts','gnso','oc']},
+  {key:'toronto',label:'Google Brain, Toronto',prompt:'A photo of the Google Brain office in Toronto.',m:['trs','rs','zo','dts','gnso','oc']},
+  {key:'zebra',label:'Zebra & broccoli',prompt:'A zebra underneath a broccoli.',m:['trs','rs','zo','dts','gnso','oc']},
+];
+let cur=0;
+const chips=document.getElementById('chips'),grid=document.getElementById('grid'),promptEl=document.getElementById('prompt');
+EX.forEach((e,i)=>{const b=document.createElement('button');b.className='chip';b.textContent=e.label;b.onclick=()=>{cur=i;render();};chips.appendChild(b);});
+function render(){const e=EX[cur];
+  [...chips.children].forEach((c,j)=>c.classList.toggle('on',j===cur));
+  promptEl.innerHTML=`<span class="q">prompt:</span> <b>“${e.prompt}”</b>`;
+  grid.innerHTML='';
+  ORDER.filter(m=>e.m.includes(m)).forEach(m=>{
+    const cell=document.createElement('div');cell.className='cell'+(m==='trs'?' ours':'');
+    cell.innerHTML=`<div class="imgwrap"><img loading="lazy" src="assets/gallery/${e.key}__${m}.jpeg" alt="${METHODS[m]}"></div>`+
+      `<div class="cap"><span>${m==='trs'?'TRS':METHODS[m]}</span>${m==='trs'?'<span class="mark">★ OURS</span>':''}</div>`;
+    grid.appendChild(cell);});
+}
+if(new URLSearchParams(location.search).has('embed'))document.body.classList.add('embed');
+const _q=new URLSearchParams(location.search);if(_q.has('ex'))cur=+_q.get('ex');
+render();
+</script>
+<style>
+  body.embed{background:transparent;overflow-y:auto;}
+  body.embed .wrap{margin:0;max-width:none;padding:0;}
+  body.embed .wrap>h1,body.embed .wrap>p.sub,body.embed .toggle{display:none;}
+  body.embed .card{border-radius:0;border:none;box-shadow:none;}
+</style>
+</body>
+</html>

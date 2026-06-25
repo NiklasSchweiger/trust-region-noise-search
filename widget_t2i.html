@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TRS — text-to-image showcase</title>
+<style>
+  :root{--text:#0f172a;--sub:#64748b;--card:#ffffff;--bg:#f1f5f9;--line:#e2e8f0;--primary:#2563eb;}
+  body.dark{--text:#e2e8f0;--sub:#94a3b8;--card:#0b1220;--bg:#020617;--line:#1e293b;--primary:#60a5fa;}
+  html,body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif;}
+  .wrap{max-width:760px;margin:30px auto;padding:0 18px;}
+  h1{font-size:1.2rem;margin:0 0 .2rem;font-weight:700;}
+  p.sub{color:var(--sub);margin:0 0 1.2rem;font-size:.92rem;line-height:1.55;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 8px 24px -12px rgb(0 0 0 /.25);overflow:hidden;}
+  .stage{position:relative;width:100%;aspect-ratio:1/1;user-select:none;touch-action:none;cursor:ew-resize;overflow:hidden;background:#000;}
+  .stage img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;}
+  .top{clip-path:inset(0 0 0 var(--split));}
+  .tag{position:absolute;top:12px;padding:5px 11px;border-radius:999px;font-size:.74rem;font-weight:700;letter-spacing:.02em;color:#fff;backdrop-filter:blur(4px);}
+  .tag.l{left:12px;background:rgba(15,23,42,.62);}
+  .tag.r{right:12px;background:rgba(37,99,235,.78);}
+  .handle{position:absolute;top:0;bottom:0;width:2px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.25);left:var(--split);transform:translateX(-1px);}
+  .knob{position:absolute;top:50%;left:var(--split);width:38px;height:38px;border-radius:50%;background:#fff;
+    box-shadow:0 2px 8px rgba(0,0,0,.35);transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;color:#1e293b;font-size:13px;font-weight:800;}
+  .meta{padding:14px 18px 4px;}
+  .prompt{font-size:.96rem;line-height:1.5;}
+  .prompt .q{color:var(--sub);}
+  .reward{display:inline-flex;align-items:center;gap:6px;margin-top:8px;font-size:.8rem;font-weight:700;color:#16a34a;}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;padding:14px 18px 18px;border-top:1px solid var(--line);margin-top:10px;}
+  .chip{font:inherit;font-size:.82rem;font-weight:600;cursor:pointer;border:1px solid var(--line);background:transparent;color:var(--sub);
+    border-radius:999px;padding:6px 13px;display:flex;align-items:center;gap:7px;}
+  .chip.active{background:var(--primary);border-color:var(--primary);color:#fff;}
+  .chip img{width:22px;height:22px;border-radius:5px;object-fit:cover;}
+  .toggle{position:fixed;top:14px;right:14px;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:9px;padding:7px 12px;cursor:pointer;font:inherit;}
+  .hint{text-align:center;color:var(--sub);font-size:.78rem;margin-top:10px;}
+  body.embed{background:transparent;}
+  body.embed .wrap{margin:0;max-width:none;padding:0;}
+  body.embed .wrap>h1,body.embed .wrap>p.sub,body.embed .hint,body.embed .toggle{display:none;}
+  body.embed .card{border-radius:0;border:none;box-shadow:none;}
+</style>
+</head>
+<body>
+<button class="toggle" onclick="document.body.classList.toggle('dark')">◐ theme</button>
+<div class="wrap">
+  <h1>What TRS does to text-to-image generation</h1>
+  <p class="sub">Same Stable Diffusion 1.5 model, same prompt — the only change is the source noise TRS searches for.
+    <b>Drag</b> to compare the baseline sample against the TRS-aligned one.</p>
+  <div class="card">
+    <div class="stage" id="stage">
+      <img id="imgBase" alt="baseline">
+      <img id="imgTrs" class="top" alt="TRS">
+      <span class="tag l">Baseline · SD 1.5</span>
+      <span class="tag r">TRS · ours</span>
+      <div class="handle" id="handle"></div>
+      <div class="knob" id="knob">⇄</div>
+    </div>
+    <div class="meta">
+      <div class="prompt"><span class="q">prompt:</span> <span id="prompt"></span></div>
+      <div class="reward">★ better prompt alignment &amp; reward under the same budget</div>
+    </div>
+    <div class="chips" id="chips"></div>
+  </div>
+  <p class="hint">Drag the divider · click a thumbnail to switch example</p>
+</div>
+<script>
+const EX=[
+  {key:'panda',label:'Panda latte',prompt:'a panda making latte art'},
+  {key:'egypt',label:'Egyptian painting',prompt:'an ancient Egyptian painting depicting an argument over whose turn it is to take out the trash'},
+  {key:'kitten',label:'Kitten & duck',prompt:'35mm macro shot, a kitten licking a baby duck, studio lighting'},
+  {key:'flowerpot',label:'Triangle flower pot',prompt:'a purple flower pot in the shape of a triangle'},
+  {key:'airship',label:'Airship pig',prompt:'an old photograph of a 1920s airship shaped like a pig floating over a wheat field'},
+  {key:'arnold',label:'Lego Arnold',prompt:'Lego Arnold Schwarzenegger'},
+];
+const stage=document.getElementById('stage'),imgBase=document.getElementById('imgBase'),imgTrs=document.getElementById('imgTrs');
+const promptEl=document.getElementById('prompt'),chips=document.getElementById('chips');
+let split=0.5;
+function setSplit(v){split=Math.max(0,Math.min(1,v));stage.style.setProperty('--split',(split*100)+'%');}
+function load(i){const e=EX[i];imgBase.src='assets/t2i/'+e.key+'_base.png';imgTrs.src='assets/t2i/'+e.key+'_trs.png';
+  promptEl.textContent='“'+e.prompt+'”';[...chips.children].forEach((c,j)=>c.classList.toggle('active',j===i));setSplit(0.5);}
+EX.forEach((e,i)=>{const b=document.createElement('button');b.className='chip';
+  b.innerHTML=`<img src="assets/t2i/${e.key}_trs.png" alt=""><span>${e.label}</span>`;b.onclick=()=>load(i);chips.appendChild(b);});
+function pos(ev){const r=stage.getBoundingClientRect();const x=(ev.touches?ev.touches[0].clientX:ev.clientX)-r.left;setSplit(x/r.width);}
+let drag=false;
+stage.addEventListener('pointerdown',e=>{drag=true;pos(e);});
+window.addEventListener('pointermove',e=>{if(drag)pos(e);});
+window.addEventListener('pointerup',()=>drag=false);
+// allow ?ex= & ?split= for deterministic capture
+const p=new URLSearchParams(location.search);
+if(p.has('embed'))document.body.classList.add('embed');
+load(p.has('ex')?(+p.get('ex')):0);
+if(p.has('split'))setSplit(+p.get('split'));
+</script>
+</body>
+</html>

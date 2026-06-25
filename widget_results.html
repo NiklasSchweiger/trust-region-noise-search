@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TRS — interactive scaling results</title>
+<style>
+  :root{--text:#0f172a;--sub:#64748b;--card:#ffffff;--bg:#f1f5f9;--line:#e2e8f0;--primary:#2563eb;--grid:#eef2f7;}
+  body.dark{--text:#e2e8f0;--sub:#94a3b8;--card:#0b1220;--bg:#020617;--line:#1e293b;--primary:#60a5fa;--grid:#13203a;}
+  html,body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif;}
+  .wrap{max-width:780px;margin:30px auto;padding:0 18px;}
+  h1{font-size:1.2rem;margin:0 0 .2rem;font-weight:700;}
+  p.sub{color:var(--sub);margin:0 0 1.2rem;font-size:.92rem;line-height:1.55;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 8px 24px -12px rgb(0 0 0 /.25);padding:16px 18px 18px;}
+  .tabs{display:inline-flex;gap:3px;margin-bottom:14px;flex-wrap:wrap;background:var(--grid);border:1px solid var(--line);border-radius:12px;padding:3px;}
+  .tab{font:inherit;font-size:.84rem;font-weight:700;cursor:pointer;border:0;background:transparent;color:var(--sub);border-radius:9px;padding:7px 15px;transition:background .16s,color .16s,box-shadow .16s;}
+  .tab:hover{color:var(--text);}
+  .tab.on{background:var(--card);color:var(--primary);box-shadow:0 1px 3px rgb(0 0 0 /.12);}
+  .chips{display:flex;gap:7px;margin-bottom:12px;flex-wrap:wrap;}
+  .chip{font:inherit;font-size:.8rem;font-weight:600;cursor:pointer;border:1px solid var(--line);background:transparent;color:var(--sub);border-radius:999px;padding:5px 13px;transition:border-color .16s,color .16s,background .16s;}
+  .chip:hover{border-color:var(--primary);color:var(--text);}
+  .chip.on{border-color:var(--primary);color:var(--primary);background:color-mix(in srgb,var(--primary) 12%,transparent);font-weight:700;}
+  .chartwrap{position:relative;width:100%;aspect-ratio:1.7/1;}
+  canvas{display:block;width:100%;height:100%;}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;}
+  .leg{display:inline-flex;align-items:center;gap:7px;font-size:.84rem;font-weight:600;cursor:pointer;color:var(--text);user-select:none;}
+  .leg.off{opacity:.38;}
+  .leg .sw{width:18px;height:4px;border-radius:2px;}
+  .leg .dot{width:9px;height:9px;border-radius:50%;}
+  .note{margin-top:10px;color:var(--sub);font-size:.78rem;}
+  .toggle{position:fixed;top:14px;right:14px;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:9px;padding:7px 12px;cursor:pointer;font:inherit;}
+  body.embed{background:transparent;}
+  body.embed .wrap{margin:0;max-width:none;padding:0;}
+  body.embed .wrap>h1,body.embed .wrap>p.sub,body.embed .toggle{display:none;}
+  body.embed .card{border-radius:0;border:none;box-shadow:none;}
+</style>
+</head>
+<body>
+<button class="toggle" onclick="document.body.classList.toggle('dark');draw()">◐ theme</button>
+<div class="wrap">
+  <h1>How TRS scales with compute</h1>
+  <p class="sub">Mean best reward vs. evaluation budget (NFE), across tasks and reward models. <b>Hover</b> the chart for exact values; click the legend to toggle methods.</p>
+  <div class="card">
+    <div class="tabs" id="tabs"></div>
+    <div class="chips" id="chips"></div>
+    <div class="chartwrap"><canvas id="c"></canvas></div>
+    <div class="legend" id="legend"></div>
+    <div class="note" id="note"></div>
+  </div>
+</div>
+<script>
+// paper colours (TUM palette from iclr2026_conference.tex): TRS blue, Random green, Zero-order orange, DTS* red-orange
+const M={trs:{label:'TRS (Ours)',color:'#1f77b4',w:3.2,r:4.5},rand:{label:'Random Search',color:'#9fba36',w:2,r:3.3},
+  zo:{label:'Zero-order',color:'#f7b11e',w:2,r:3.3},dts:{label:'DTS*',color:'#d95117',w:2,r:3.3}};
+const DATA={
+  image:{name:'Text-to-Image',better:'up',ylabel:'Mean best reward',xlabel:'NFE',
+    metrics:[
+      {key:'SD 1.5 · ImageReward',x:[5000,10000,15000,20000],s:{trs:[1.317,1.527,1.600,1.622],rand:[1.307,1.388,1.411,1.442],zo:[1.388,1.415,1.496,1.508],dts:[1.350,1.480,1.540,1.578]}},
+      {key:'SD 1.5 · HPSv2',x:[5000,10000,15000,20000],s:{trs:[0.304,0.314,0.318,0.322],rand:[0.294,0.298,0.300,0.302],zo:[0.302,0.308,0.311,0.313],dts:[0.299,0.303,0.304,0.305]}},
+      {key:'SDXL · ImageReward',x:[800,1600,2400,3200],s:{trs:[1.456,1.570,1.614,1.660],rand:[1.470,1.522,1.540,1.551],zo:[1.505,1.552,1.576,1.590],dts:[1.504,1.568,1.597,1.619]}},
+      {key:'SDXL · HPSv2',x:[800,1600,2400,3200],s:{trs:[0.323,0.330,0.335,0.339],rand:[0.318,0.321,0.323,0.324],zo:[0.325,0.329,0.330,0.331],dts:[0.316,0.321,0.325,0.327]}},
+    ]},
+  molecule:{name:'Molecule',better:'down',ylabel:'Loss (property distance)',xlabel:'NFE',
+    metrics:[
+      {key:'L₃',x:[25000,50000,75000,100000],s:{trs:[0.527,0.463,0.421,0.394],rand:[0.542,0.513,0.481,0.473],zo:[0.511,0.473,0.452,0.432]}},
+      {key:'L₆',x:[25000,50000,75000,100000],s:{trs:[0.640,0.591,0.572,0.548],rand:[0.679,0.653,0.627,0.617],zo:[0.661,0.623,0.606,0.591]}},
+    ]},
+  protein:{name:'Protein',better:'up',ylabel:'Mean best reward',xlabel:'NFE',
+    metrics:[
+      {key:'50 residues',x:[16000,32000,48000,64000],s:{trs:[0.425,0.525,0.601,0.633],rand:[0.413,0.471,0.505,0.533],zo:[0.447,0.542,0.574,0.588]}},
+      {key:'100 residues',x:[16000,32000,48000,64000],s:{trs:[0.242,0.344,0.404,0.437],rand:[0.227,0.286,0.312,0.333],zo:[0.245,0.332,0.362,0.386]}},
+    ]},
+};
+const ORDER=['trs','rand','zo','dts'];
+let task='image',mi=0,off={},anim=0,hoverX=null;
+const cv=document.getElementById('c'),ctx=cv.getContext('2d');
+const tabsEl=document.getElementById('tabs'),chipsEl=document.getElementById('chips'),legEl=document.getElementById('legend'),noteEl=document.getElementById('note');
+
+function buildTabs(){tabsEl.innerHTML='';Object.keys(DATA).forEach(k=>{const b=document.createElement('button');b.className='tab'+(k===task?' on':'');b.textContent=DATA[k].name;b.onclick=()=>{task=k;mi=0;off={};startAnim();buildTabs();buildChips();buildLegend();};tabsEl.appendChild(b);});}
+function buildChips(){chipsEl.innerHTML='';DATA[task].metrics.forEach((m,i)=>{const b=document.createElement('button');b.className='chip'+(i===mi?' on':'');b.textContent=m.key;b.onclick=()=>{mi=i;startAnim();buildChips();};chipsEl.appendChild(b);});}
+function buildLegend(){legEl.innerHTML='';const ser=DATA[task].metrics[mi].s;ORDER.filter(k=>ser[k]).forEach(k=>{
+  const d=document.createElement('div');d.className='leg'+(off[k]?' off':'');
+  d.innerHTML=`<span class="sw" style="background:${M[k].color}"></span><span class="dot" style="background:${M[k].color}"></span>${M[k].label}`;
+  d.onclick=()=>{off[k]=!off[k];buildLegend();draw();};legEl.appendChild(d);});
+  noteEl.innerHTML=`${DATA[task].ylabel} &nbsp;·&nbsp; ${DATA[task].better==='up'?'higher is better ↑':'lower is better ↓'} &nbsp;·&nbsp; data from the paper's scaling study`;}
+
+function startAnim(){anim=0;const t0=performance.now();function step(now){anim=Math.min(1,(now-t0)/650);draw();if(anim<1)requestAnimationFrame(step);}requestAnimationFrame(step);}
+const ease=t=>1-Math.pow(1-t,3);
+const hexA=(hex,a)=>{const n=parseInt(hex.slice(1),16);return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`;};
+
+function draw(){
+  const C=n=>getComputedStyle(document.body).getPropertyValue(n).trim();
+  const W=cv.clientWidth,H=cv.clientHeight,dpr=Math.min(2,devicePixelRatio||1);
+  cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
+  const TX=C('--text'),SUB=C('--sub'),GRID=C('--grid'),CARD=C('--card');
+  const dark=document.body.classList.contains('dark');
+  ctx.clearRect(0,0,W,H);
+  const m=DATA[task].metrics[mi],xs=m.x,ser=m.s,vis=ORDER.filter(k=>ser[k]&&!off[k]);
+  // y-range from all series (visible or not, for stable axis)
+  let lo=1e9,hi=-1e9;ORDER.filter(k=>ser[k]).forEach(k=>ser[k].forEach(v=>{lo=Math.min(lo,v);hi=Math.max(hi,v);}));
+  const pad=(hi-lo)*0.15||1;lo-=pad;hi+=pad;
+  const L=58,R=50,T=16,B=42,pw=W-L-R,ph=H-T-B;
+  const X=i=>L+pw*(xs[i]-xs[0])/(xs[xs.length-1]-xs[0]);
+  const Y=v=>T+ph*(hi-v)/(hi-lo);
+  // grid + y ticks
+  ctx.font='11px Inter';ctx.textBaseline='middle';
+  for(let g=0;g<=4;g++){const v=lo+(hi-lo)*g/4,y=Y(v);ctx.strokeStyle=GRID;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(L,y);ctx.lineTo(W-R,y);ctx.stroke();
+    ctx.fillStyle=SUB;ctx.textAlign='right';ctx.fillText(v.toFixed(task==='image'&&mi<2?2:2),L-8,y);}
+  // x ticks
+  ctx.textAlign='center';ctx.textBaseline='top';
+  xs.forEach((xv,i)=>{ctx.fillStyle=SUB;ctx.fillText(xv>=1000?(xv/1000)+'k':xv,X(i),H-B+8);});
+  ctx.fillStyle=SUB;ctx.fillText(DATA[task].xlabel,L+pw/2,H-16);
+  // axis labels (y)
+  ctx.save();ctx.translate(14,T+ph/2);ctx.rotate(-Math.PI/2);ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle=SUB;ctx.font='600 11px Inter';ctx.fillText(DATA[task].ylabel,0,0);ctx.restore();
+  // lines
+  const aprog=ease(anim);
+  // area fill under the TRS line (subtle gradient) — draw first, behind everything
+  if(!off.trs){const d=ser.trs,grad=ctx.createLinearGradient(0,T,0,T+ph);
+    const gc=M.trs.color;grad.addColorStop(0,hexA(gc,dark?0.30:0.20));grad.addColorStop(1,hexA(gc,0.0));
+    ctx.save();ctx.beginPath();ctx.rect(L-2,T-20,(pw+4)*aprog,ph+40);ctx.clip();
+    ctx.beginPath();ctx.moveTo(X(0),Y(d[0]));for(let i=1;i<d.length;i++)ctx.lineTo(X(i),Y(d[i]));
+    ctx.lineTo(X(d.length-1),T+ph);ctx.lineTo(X(0),T+ph);ctx.closePath();ctx.fillStyle=grad;ctx.fill();ctx.restore();}
+  // draw TRS last so it sits on top
+  const drawOrder=vis.slice().sort((a,b)=>(a==='trs'?1:0)-(b==='trs'?1:0));
+  drawOrder.forEach(k=>{const col=M[k].color,d=ser[k];ctx.strokeStyle=col;ctx.lineWidth=M[k].w;ctx.lineJoin='round';ctx.lineCap='round';
+    ctx.save();ctx.beginPath();ctx.rect(L-2,T-20,(pw+4)*aprog,ph+40);ctx.clip();
+    ctx.beginPath();for(let i=0;i<d.length;i++){const xx=X(i),yy=Y(d[i]);i===0?ctx.moveTo(xx,yy):ctx.lineTo(xx,yy);}ctx.stroke();
+    for(let i=0;i<d.length;i++){ctx.beginPath();ctx.arc(X(i),Y(d[i]),M[k].r,0,7);ctx.fillStyle=col;ctx.fill();
+      if(k==='trs'){ctx.lineWidth=2;ctx.strokeStyle=CARD;ctx.stroke();}}
+    ctx.restore();});
+  // endpoint value labels (right of last point)
+  if(aprog>0.92)drawOrder.forEach(k=>{const d=ser[k],ly=Y(d[d.length-1]);
+    ctx.fillStyle=M[k].color;ctx.font=(k==='trs'?'800 ':'600 ')+'11px Inter';ctx.textAlign='left';ctx.textBaseline='middle';
+    ctx.fillText(d[d.length-1].toFixed(task==='molecule'?3:3),X(d.length-1)+9,ly);});
+  // hover guide + tooltip
+  if(hoverX!=null&&anim>=1){let bi=0,bd=1e9;xs.forEach((xv,i)=>{const dd=Math.abs(X(i)-hoverX);if(dd<bd){bd=dd;bi=i;}});
+    const gx=X(bi);ctx.strokeStyle=SUB;ctx.setLineDash([4,3]);ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(gx,T);ctx.lineTo(gx,T+ph);ctx.stroke();ctx.setLineDash([]);
+    const rows=vis.map(k=>({k,v:ser[k][bi]})).sort((a,b)=>DATA[task].better==='up'?b.v-a.v:a.v-b.v);
+    vis.forEach(k=>{ctx.beginPath();ctx.arc(gx,Y(ser[k][bi]),M[k].r+1.5,0,7);ctx.fillStyle=M[k].color;ctx.fill();ctx.lineWidth=2;ctx.strokeStyle=CARD;ctx.stroke();});
+    const bw=150,bh=20+rows.length*18,bx=Math.min(gx+12,W-bw-6),by=T+8;
+    ctx.fillStyle=CARD;ctx.strokeStyle=C('--line');ctx.lineWidth=1;rrect(bx,by,bw,bh,8);ctx.fill();ctx.stroke();
+    ctx.textAlign='left';ctx.textBaseline='middle';ctx.font='700 11px Inter';ctx.fillStyle=TX;ctx.fillText(`NFE = ${xs[bi]>=1000?(xs[bi]/1000)+'k':xs[bi]}`,bx+10,by+12);
+    rows.forEach((r,i)=>{const yy=by+30+i*18;ctx.beginPath();ctx.arc(bx+14,yy,4,0,7);ctx.fillStyle=M[r.k].color;ctx.fill();
+      ctx.fillStyle=TX;ctx.font=(r.k==='trs'?'700 ':'500 ')+'11px Inter';ctx.fillText(M[r.k].label,bx+24,yy);
+      ctx.textAlign='right';ctx.fillText(r.v.toFixed(3),bx+bw-10,yy);ctx.textAlign='left';});}
+  function rrect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+}
+cv.addEventListener('mousemove',e=>{const r=cv.getBoundingClientRect();hoverX=e.clientX-r.left;draw();});
+cv.addEventListener('mouseleave',()=>{hoverX=null;draw();});
+window.addEventListener('resize',draw);
+const _q=new URLSearchParams(location.search);if(_q.has('embed'))document.body.classList.add('embed');
+if(_q.has('task')&&DATA[_q.get('task')])task=_q.get('task');if(_q.has('metric'))mi=+_q.get('metric');
+buildTabs();buildChips();buildLegend();startAnim();
+</script>
+</body>
+</html>

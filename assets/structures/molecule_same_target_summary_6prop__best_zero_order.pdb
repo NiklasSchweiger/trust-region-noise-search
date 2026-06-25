@@ -1,0 +1,22 @@
+HEADER    MOLECULE DESIGN OPTIMIZATION            QM9_TARGET
+TITLE     Molecule Optimization: qm9_target_6prop_zero_order_paper6PROP
+REMARK 001 TASK INDEX: 0
+REMARK 001 ITERATION: final
+REMARK 001 REWARD: -0.9934
+HETATM    1  C1  UNL     1      -0.361  -0.688   1.756  1.00  0.00           C  
+HETATM    2  H1  UNL     1      -0.105  -0.152  -2.782  1.00  0.00           H  
+HETATM    3  H2  UNL     1       0.974  -2.087   1.755  1.00  0.00           H  
+HETATM    4  H3  UNL     1       0.667   1.896   0.572  1.00  0.00           H  
+HETATM    5  H4  UNL     1      -1.089   1.820   0.458  1.00  0.00           H  
+HETATM    6  C2  UNL     1       0.432   0.155  -1.873  1.00  0.00           C  
+HETATM    7  H5  UNL     1       0.122  -0.046   2.517  1.00  0.00           H  
+HETATM    8  H6  UNL     1      -1.438  -0.662   1.970  1.00  0.00           H  
+HETATM    9  H7  UNL     1      -1.008   1.579  -1.737  1.00  0.00           H  
+HETATM   10  H8  UNL     1       0.380  -1.870  -0.777  1.00  0.00           H  
+HETATM   11  C3  UNL     1       0.243  -0.800  -0.717  1.00  0.00           C  
+HETATM   12  H9  UNL     1       1.494   0.223  -2.150  1.00  0.00           H  
+HETATM   13  N1  UNL     1      -0.073   1.454  -1.377  1.00  0.00           N  
+HETATM   14  O1  UNL     1       0.020  -2.046   1.904  1.00  0.00           O  
+HETATM   15  C4  UNL     1      -0.165   1.355   0.090  1.00  0.00           C  
+HETATM   16  C5  UNL     1      -0.092  -0.131   0.391  1.00  0.00           C  
+END
