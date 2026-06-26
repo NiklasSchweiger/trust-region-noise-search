@@ -1,8 +1,8 @@
 # Trust-Region Noise Search for Black-Box Alignment of Diffusion and Flow Models
 
 [![arXiv](https://img.shields.io/badge/arXiv-2603.14504-b31b1b.svg)](https://arxiv.org/abs/2603.14504)
-[![ICLR 2026](https://img.shields.io/badge/ICLR%202026-ReALM--GEN%20Workshop-792ee5.svg)](https://niklasschweiger.github.io/trust-region-noise-search/)
-[![ECCV 2026](https://img.shields.io/badge/ECCV%202026-1b6ec2.svg)](https://niklasschweiger.github.io/trust-region-noise-search/)
+[![ICLR 2026](https://img.shields.io/badge/ICLR%202026-ReALM--GEN%20Workshop-792ee5.svg)](https://realm-gen-workshop.github.io)
+[![ECCV 2026](https://img.shields.io/badge/ECCV%202026-1b6ec2.svg)](https://eccv.ecva.net)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![PyTorch 2.5+](https://img.shields.io/badge/PyTorch-2.5+-ee4c2c.svg)](https://pytorch.org/)
