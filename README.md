@@ -20,7 +20,6 @@
 
 ## Table of Contents
 
-- [Abstract](#abstract)
 - [Method](#method)
 - [Results](#results)
 - [Installation](#installation)
@@ -31,13 +30,9 @@
 - [Citation](#citation)
 
 
-## Abstract
-
-Optimizing the noise samples of diffusion and flow models is an increasingly popular approach to align these models to target rewards at inference time. However, we observe that these approaches are usually restricted to differentiable or cheap reward models, the formulation of the underlying pre-trained generative model, or are memory/compute inefficient. We instead propose a simple trust-region based search algorithm (TRS) which treats the pre-trained generative and reward models as a black-box and only optimizes the source noise. Our approach achieves a good balance between global exploration and local exploitation, and is versatile and easily adaptable to various generative settings and reward models with minimal hyperparameter tuning. We evaluate TRS across text-to-image, molecule and protein design tasks, and obtain significantly improved output samples over the base generative models and other inference-time alignment approaches which optimize the source noise sample, or even the entire reverse-time sampling noise trajectories in the case of diffusion models. 
-
 ## Method
 
-TRS maintains a set of parallel trust regions in the source noise space. Each trust region is centered on a high-reward noise sample discovered so far. At every iteration, candidate noise vectors are sampled (via Sobol sequences) within each trust region's hypercube, evaluated through the frozen generative and reward models, and the best candidates are retained. Trust region sizes expand on successive successes and shrink on failures, balancing exploration and exploitation without requiring gradients or a surrogate model.
+TRS treats the pre-trained generative and reward models as a black box and optimizes only the source noise, maintaining a set of parallel trust regions centered on the best noise samples found so far. Each iteration draws Sobol candidates inside every region's hypercube, scores them through the frozen models, keeps the best, and then expands regions on success or shrinks them on failure — balancing global exploration and local exploitation without gradients or a surrogate model.
 
 <p align="center">
   <img src="assets/trs_method.gif" alt="Trust-Region Search (TRS) method animation" width="900" />
