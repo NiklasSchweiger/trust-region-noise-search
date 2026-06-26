@@ -16,12 +16,6 @@
   </a>
 </p>
 
-<p align="center">
-  <a href="assets/second_teaser.png">
-    <img src="assets/second_teaser.png" alt="TRS second teaser" width="900" />
-  </a>
-</p>
-
 ## Table of Contents
 
 - [Abstract](#abstract)
@@ -44,28 +38,20 @@ Optimizing the noise samples of diffusion and flow models is an increasingly pop
 TRS maintains a set of parallel trust regions in the source noise space. Each trust region is centered on a high-reward noise sample discovered so far. At every iteration, candidate noise vectors are sampled (via Sobol sequences) within each trust region's hypercube, evaluated through the frozen generative and reward models, and the best candidates are retained. Trust region sizes expand on successive successes and shrink on failures, balancing exploration and exploitation without requiring gradients or a surrogate model.
 
 <p align="center">
-  <a href="assets/method.png">
-    <img src="assets/method.png" alt="Trust-Region Search (TRS) method overview" width="900" />
-  </a>
+  <img src="assets/trs_method.gif" alt="Trust-Region Search (TRS) method animation" width="900" />
 </p>
+
+<p align="center"><sub>One TRS iteration, animated: trust regions in noise space propose masked candidates, the frozen model ℱ maps them to outputs, top‑k samples are ranked, and the regions expand/shrink and re‑center. <b><a href="https://niklasschweiger.github.io/trust-region-noise-search/">▶ Explore the live, interactive version on the project page.</a></b></sub></p>
 
 ## Results
 
-TRS improves reward alignment across text-to-image, molecule generation, and protein design. Summary below; click an image to view full size.
+TRS improves reward alignment across text-to-image, molecule generation, and protein design:
 
-| **Text-to-Image (split-screen)** | **Molecules & Protein** |
-| --- | --- |
-| [![Text-to-Image results](assets/image_results.png)](assets/image_results.png) | [![Molecule results](assets/mol_results.png)](assets/mol_results.png)<br><br>[![Protein results](assets/protein_results.png)](assets/protein_results.png) |
-
-**Qualitative visualizations** — sample outputs across modalities:
-
-| **Text-to-Image** | **Molecules & Protein** |
-| --- | --- |
-| [![Image visualizations](assets/img_vis.png)](assets/img_vis.png) | [![Molecule and protein visualizations](assets/mol_prot_vis.png)](assets/mol_prot_vis.png) |
-
-- **Text-to-Image:** TRS significantly improves reward alignment for Stable Diffusion 1.5 and SDXL Lightning for ImageReward and HPSv2
+- **Text-to-Image:** TRS significantly improves reward alignment for Stable Diffusion 1.5 and SDXL Lightning for ImageReward and HPSv2.
 - **Molecules:** Simultaneously optimizing six chemical properties, TRS outperforms all baselines on the QM9 multi-property target task.
 - **Protein:** TRS improves designability on unconditional protein backbone generation.
+
+📊 **[Browse the full interactive results, qualitative galleries, and 3D molecule/protein viewers on the project page →](https://niklasschweiger.github.io/trust-region-noise-search/)**
 
 ## Installation
 
