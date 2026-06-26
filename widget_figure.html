@@ -45,6 +45,12 @@
 const cv=document.getElementById('c'),ctx=cv.getContext('2d'),labels=document.getElementById('labels');
 const scrub=document.getElementById('scrub'),playBtn=document.getElementById('play'),captionEl=document.getElementById('caption');
 let CLOCK=0;
+// ---- timeline (ms) ----
+// Warm-up is sped up vs the rest. REST_MS/HOLD_MS keep their original wall-clock pace,
+// so only the warm-up plays faster (bump WARMUP_SPEEDUP to make it quicker still).
+const WARMUP_SPEEDUP=1.6, REST_MS=21904, HOLD_MS=7400, WARM_MS=7696/WARMUP_SPEEDUP;
+const ACTIVE_MS=WARM_MS+REST_MS, DUR=ACTIVE_MS+HOLD_MS;
+const AF=ACTIVE_MS/DUR, WARM_WALL=WARM_MS/ACTIVE_MS;
 function setCaption(phase,txt){const key=phase+'|'+txt;if(captionEl&&captionEl.dataset.k!==key){captionEl.dataset.k=key;
   captionEl.innerHTML=`<strong style="color:var(--primary,#2563eb);font-weight:800;">${phase}</strong> &nbsp;·&nbsp; ${txt}`;}}
 const _kc={};const K=t=>{if(_kc[t]!==undefined)return _kc[t];if(!window.katex)return t;return _kc[t]=katex.renderToString(t,{throwOnError:false});};
@@ -148,11 +154,14 @@ function draw(rawProg){
   if(cv.width!==Math.round(W*dpr)){cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);fit();relayout();}
   ctx.setTransform(dpr,0,0,dpr,0,0);readVars();CLOCK=rawProg;
   ctx.clearRect(0,0,W,H);ctx.fillStyle=CARD;ctx.fillRect(0,0,W,H);
-  // Hold the completed figure for the last HOLD fraction of the loop before it resets.
+  // Hold the completed figure for the last (1-AF) fraction of the loop before it resets.
   // CLOCK stays on real time so streamlines/pulse keep flowing during the hold.
-  const HOLD=0.20;
-  const prog = rawProg<(1-HOLD) ? rawProg/(1-HOLD) : 1;
   const WEND=0.26;
+  // Time-warp: warm-up (phase coord [0,WEND]) is compressed into a shorter wall-clock
+  // slice (WARM_WALL) so it plays faster; the rest keeps its original pace.
+  const lin = rawProg<AF ? rawProg/AF : 1;
+  const prog = lin<WARM_WALL ? (lin/WARM_WALL)*WEND
+                             : WEND + ((lin-WARM_WALL)/(1-WARM_WALL))*(1-WEND);
   if(prog<WEND){
     // ===== WARM-UP phase (longer) =====
     const lw=clamp(prog/WEND,0,1),kb=clamp((lw-0.82)/0.18,0,1);
@@ -479,7 +488,7 @@ function drawD(local){
 
 // ---- boot ----
 const params=new URLSearchParams(location.search);
-let t=params.has('t')?parseFloat(params.get('t')):0,playing=!params.has('t'),last=null;const DUR=37000;
+let t=params.has('t')?parseFloat(params.get('t')):0,playing=!params.has('t'),last=null;
 if(!playing)playBtn.textContent='Play';
 function frame(now){if(last==null)last=now;const dt=now-last;last=now;if(playing){t=(t+dt/DUR)%1;scrub.value=Math.round(t*1000);}draw(t);requestAnimationFrame(frame);}
 // DUR raised so the staged reveal keeps its pace after the end-hold remap (last 20% holds the complete figure).
